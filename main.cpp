@@ -1,17 +1,29 @@
 #include <iostream>
 #include <cstdlib>
 
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
+
 #include "myPDF.hpp"
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    int nValues = 100000;
+    const gsl_rng_type * T;
+    gsl_rng * r;
+
+    gsl_rng_env_setup();
+
+    T = gsl_rng_default;
+    r = gsl_rng_alloc (T);
+
+    int nValues = 20000;
     double *values = new double[nValues];
     for(int i = 0; i < nValues; i++)
     {
-	values[i] = ((double)rand())/(double)RAND_MAX;
+	values[i] = (double) gsl_ran_gaussian(r, 1.0);
+	//values[i] = ((double)rand())/(double)RAND_MAX;
     }
 
     myPDF *newPDF = new myPDF(50, values, nValues);
@@ -27,11 +39,12 @@ int main(int argc, char **argv)
     cout << "#" << minValue << "\t" << maxValue << "\t" << binSpacing << "\n";
     
   
-    for(int i = -100 ; i < 600 ; i++ )
+    for(int i = -200 ; i < 200 ; i++ )
     {
-	cout << 0.002*(double)i << "\t" << newPDF->getCDFValue( 0.002 * (double)i) << "\n";
+	cout << 0.02*(double)i << "\t" << newPDF->getCDFValue( 0.02 * (double)i) << "\n";
     } 
 
     delete newPDF;
+    gsl_rng_free(r);
     return 0;
 }

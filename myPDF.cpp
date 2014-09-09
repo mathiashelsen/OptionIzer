@@ -17,9 +17,11 @@ myPDF::myPDF(int _nBins, double *x, int nValues)
     // from these deduce the spacing between bins
     binSpacing = (maxValue - minValue)/((double) nBins);
     // so you can create the histogram
+    int index = 0;
     for(int i = 0; i < nValues; i++ )
     {
-	tmpHisto[ (int) (x[i]/binSpacing) ]++;
+	index =(int) ( (x[i] - minValue) /binSpacing);
+	tmpHisto[index] = tmpHisto[index] + 1;
     }
     // from this the cumulative PDF
     CDF[0] = 0.0;
@@ -60,45 +62,20 @@ double myPDF::getCDFValue(double x)
     }
     else
     {
-	int index = ((int) ( (x - minValue) / binSpacing )) ;
+	int index = (int) ( (x - minValue) / binSpacing );
+	double lowerBound = binSpacing*(double)index + minValue;
 	double interpValue = 0.0;
 	if( index < nBins )
 	{
-	    interpValue = CDF[index] + (CDF[index+1] - CDF[index])*(x - binSpacing*(double)index)/binSpacing;
+	    interpValue = CDF[index] + (CDF[index+1] - CDF[index])*(x - lowerBound)/binSpacing;
 	}
 	else
 	{
-	    interpValue = CDF[index] + (1.0 - CDF[index])*(x - binSpacing*(double)index)/binSpacing;
+	    interpValue = CDF[index] + (1.0 - CDF[index])*(x - lowerBound)/binSpacing;
 	}
 
 	return interpValue;
-	//return CDF[index];
-	//return CDF[(int)((x-minValue)/binSpacing)];
     }
-    /*
-    double interpVal = 0.0;
-    
-    if( (x < minValue) && (x >= (minValue - binSpacing)) )
-    {
-	interpVal = x*CDF[0]/binSpacing;
-    }
-    else if( (x > maxValue) && (x <= (maxValue + binSpacing)) )
-    {
-	interpVal = CDF[nBins-1] + (1.0 - CDF[nBins-1])*(x - maxValue)/binSpacing;
-    }
-    else if( (x > (maxValue + binSpacing )) )
-    {
-	interpVal = 1.0;
-    }
-    else
-    {
-	int index = (int) ( (x - minValue)/binSpacing );
-	double lowerBound = minValue + binSpacing*(double)index;
-	interpVal = CDF[index] + (CDF[index+1] - CDF[index])*(x - lowerBound)/binSpacing;
-    }
-   
-    return interpVal;
-    */
 }
 
 double myPDF::drawRandom(double x)
