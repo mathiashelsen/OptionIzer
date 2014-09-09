@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     T = gsl_rng_default;
     r = gsl_rng_alloc (T);
 
-    int nValues = 20000;
+    int nValues = 20000000;
     double *values = new double[nValues];
     for(int i = 0; i < nValues; i++)
     {
@@ -38,10 +38,11 @@ int main(int argc, char **argv)
     newPDF->getExtents(&minValue, &maxValue, &binSpacing);
     cout << "#" << minValue << "\t" << maxValue << "\t" << binSpacing << "\n";
     
-  
-    for(int i = -200 ; i < 200 ; i++ )
+    double value = 0.0;
+    for(int i = -500 ; i < 500 ; i++ )
     {
-	cout << 0.02*(double)i << "\t" << newPDF->getCDFValue( 0.02 * (double)i) << "\n";
+	value = newPDF->getCDFValue(0.02 * (double)i);
+	cout << 0.02*(double)i << "\t" << value << "\n";
     } 
 
     delete newPDF;
