@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     }
 
     myPDF *newPDF = new myPDF(50, values, nValues);
-    for(int i = 0 ; i < 2000; i++ )
+    for(int i = 0 ; i < 2000000; i++ )
     {
 	cout << newPDF->drawRandom( ((double)rand())/(double)RAND_MAX )  << "\n";
     }

@@ -104,7 +104,7 @@ double myPDF::drawRandom(double x)
 	return x_2;
     }
     */
-    if( (x >= CDF[1]) && (x <= CDF[nBins]) )
+    if( (x >= CDF[0]) && (x <= CDF[nBins]) )
     {
 	double l = minValue;
 	double u = maxValue;
@@ -124,11 +124,6 @@ double myPDF::drawRandom(double x)
 	    fc = getCDFValue(c) - x;
 	}
 	return c;	
-    }
-    else if( x < CDF[1] )
-    {
-	double interp = minValue - binSpacing + binSpacing*x/CDF[1];
-	return interp;
     }
     else
     {
