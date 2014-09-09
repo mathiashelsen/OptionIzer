@@ -80,5 +80,50 @@ double myPDF::getCDFValue(double x)
 
 double myPDF::drawRandom(double x)
 {
-    return 1.0;
+    double maxErr = 0.0001;
+    /*
+    std::cout << x << "\n";
+    if( (x > CDF[1]) && (x < CDF[nBins] ) )
+    {
+	double x_0 = minValue;
+	double fx_0 = getCDFValue(x_0) - x;
+	double x_1 = maxValue;
+	double fx_1 = getCDFValue(x_1) - x;
+	double x_2 = x_1 - fx_1*((x_1 - x_0)/(fx_1 - fx_0));
+	double fx_2 = getCDFValue(x_2) - x;
+	while(fabs(fx_2) > maxErr)
+	{
+	    x_0 = x_1;
+	    fx_0 = fx_1;
+	    x_1 = x_2;
+	    fx_1 = fx_2;	
+	    x_2 = x_1 - fx_1*((x_1 - x_0)/(fx_1 - fx_0));
+	    fx_2 = getCDFValue(x_2) - x;
+	    std::cout << x_2 << "\t" << fx_2 << "\n";
+	}
+	return x_2;
+    }
+    */
+    if( (x > CDF[1]) && (x < CDF[nBins]) )
+    {
+	double l = minValue;
+	double u = maxValue;
+	double c = (l+u)*0.5;
+	double fc = getCDFValue(c) - x;
+	while( fabs(fc) > maxErr )
+	{
+	    if( fc < 0.0 )
+	    {
+		l = c;
+	    }
+	    else
+	    {
+		u = c;
+	    }
+	    c = (l+u)*0.5;
+	    fc = getCDFValue(c) - x;
+	}
+	return c;	
+    }
+    return -1.0;
 }

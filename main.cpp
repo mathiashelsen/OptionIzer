@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     T = gsl_rng_default;
     r = gsl_rng_alloc (T);
 
-    int nValues = 20000000;
+    int nValues = 20000;
     double *values = new double[nValues];
     for(int i = 0; i < nValues; i++)
     {
@@ -27,23 +27,10 @@ int main(int argc, char **argv)
     }
 
     myPDF *newPDF = new myPDF(50, values, nValues);
-    for(int i = 0; i < 50; i++ )
+    for(int i = 0 ; i < 2000; i++ )
     {
-	cout << 0.02*(double)i << "\t" << newPDF->getCDFValue(i) << "\n";
+	cout << newPDF->drawRandom( ((double)rand())/(double)RAND_MAX )  << "\n";
     }
-
-    cout << "\n\n";
-
-    double minValue = 0.0, maxValue = 0.0, binSpacing = 0.0;
-    newPDF->getExtents(&minValue, &maxValue, &binSpacing);
-    cout << "#" << minValue << "\t" << maxValue << "\t" << binSpacing << "\n";
-    
-    double value = 0.0;
-    for(int i = -500 ; i < 500 ; i++ )
-    {
-	value = newPDF->getCDFValue(0.02 * (double)i);
-	cout << 0.02*(double)i << "\t" << value << "\n";
-    } 
 
     delete newPDF;
     gsl_rng_free(r);
