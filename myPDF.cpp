@@ -7,7 +7,7 @@ myPDF::myPDF(int _nBins, double *x, int nValues)
     double * tmpHisto = new double[nBins];
     maxValue = x[0], minValue = x[0];
     // Allocating some memory for the inverse CDF
-    CDF = new double[nBins];
+    CDF = new double[nBins+1];
     // Find minimal and maximal values
     for(int i = 0; i < nValues; i++)
     {
@@ -22,10 +22,10 @@ myPDF::myPDF(int _nBins, double *x, int nValues)
 	tmpHisto[ (int) (x[i]/binSpacing) ]++;
     }
     // from this the cumulative PDF
-    CDF[0] = tmpHisto[0] / (double)nValues;
-    for(int i = 1; i < nBins; i++)
+    CDF[0] = 0.0;
+    for(int i = 1; i < nBins+1; i++)
     {
-	CDF[i] = CDF[i-1] + tmpHisto[i]/(double)nValues;
+	CDF[i] = CDF[i-1] + tmpHisto[i-1]/(double)nValues;
     }
    
     delete[] tmpHisto;
@@ -64,11 +64,11 @@ double myPDF::getCDFValue(double x)
 	double interpValue = 0.0;
 	if( index < nBins )
 	{
-	    interpValue = CDF[index-1] + (CDF[index] - CDF[index-1])*(x - binSpacing*(double)index)/binSpacing;
+	    interpValue = CDF[index] + (CDF[index+1] - CDF[index])*(x - binSpacing*(double)index)/binSpacing;
 	}
 	else
 	{
-	    interpValue = CDF[index-1] + (1.0 - CDF[index-1])*(x - binSpacing*(double)index)/binSpacing;
+	    interpValue = CDF[index] + (1.0 - CDF[index])*(x - binSpacing*(double)index)/binSpacing;
 	}
 
 	return interpValue;
