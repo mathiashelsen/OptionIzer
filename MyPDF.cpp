@@ -41,13 +41,6 @@ MyPDF::~MyPDF()
     delete[] PDF;
 }
 
-void MyPDF::getExtents(double *_minValue, double *_maxValue, double *_binSpacing)
-{
-    *_minValue = minValue;
-    *_maxValue = maxValue;
-    *_binSpacing = binSpacing;
-}
-
 double MyPDF::getCDFValue(int i)
 {
     return CDF[i];
