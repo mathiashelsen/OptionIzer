@@ -8,8 +8,8 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#include "myPDF.hpp"
-#include "timeSeries.hpp"
+#include "MyPDF.hpp"
+#include "TimeSeries.hpp"
 
 using namespace std;
 
@@ -22,8 +22,8 @@ int main(int argc, char **argv)
 
     readFile( &inputFile, &values );
 
-    myPDF *newPDF = new myPDF(50, &values);
-    timeSeries *newSeries = new timeSeries(90, 2000, newPDF);
+    MyPDF *newPDF = new MyPDF(50, &values);
+    TimeSeries *newSeries = new TimeSeries(90, 2000, newPDF);
 
     cout << newSeries->series[0][0] << ", " << newSeries->series[0][1] << ", " << newSeries->series[1][0] << "\n";
 

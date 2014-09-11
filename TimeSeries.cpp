@@ -1,6 +1,6 @@
-#include "timeSeries.hpp"
+#include "TimeSeries.hpp"
 
-timeSeries::timeSeries(int _nPoints, int _nSeries, myPDF *_PDF)
+TimeSeries::TimeSeries(int _nPoints, int _nSeries, MyPDF *_PDF)
 {
     rng = new boost::mt19937();
     nPoints = _nPoints;
@@ -17,7 +17,7 @@ timeSeries::timeSeries(int _nPoints, int _nSeries, myPDF *_PDF)
     }
 }
 
-timeSeries::~timeSeries()
+TimeSeries::~TimeSeries()
 {
     delete rng;
     for(int i = 0 ; i < nSeries; i++ )

@@ -1,6 +1,6 @@
-#include "myPDF.hpp"
+#include "MyPDF.hpp"
 
-myPDF::myPDF(int _nBins, std::vector<double> *x)
+MyPDF::MyPDF(int _nBins, std::vector<double> *x)
 {
     nBins = _nBins;
     // Local variables to be freed after initializing
@@ -36,24 +36,24 @@ myPDF::myPDF(int _nBins, std::vector<double> *x)
     delete[] tmpHisto;
 }
 
-myPDF::~myPDF()
+MyPDF::~MyPDF()
 {
     delete[] CDF;
 }
 
-void myPDF::getExtents(double *_minValue, double *_maxValue, double *_binSpacing)
+void MyPDF::getExtents(double *_minValue, double *_maxValue, double *_binSpacing)
 {
     *_minValue = minValue;
     *_maxValue = maxValue;
     *_binSpacing = binSpacing;
 }
 
-double myPDF::getCDFValue(int i)
+double MyPDF::getCDFValue(int i)
 {
     return CDF[i];
 }
 
-double myPDF::getCDFValue(double x)
+double MyPDF::getCDFValue(double x)
 {
     if( x < minValue )
     {
@@ -81,7 +81,7 @@ double myPDF::getCDFValue(double x)
     }
 }
 
-double myPDF::drawRandom(double x)
+double MyPDF::drawRandom(double x)
 {
     double maxErr = 0.0001;
     /*

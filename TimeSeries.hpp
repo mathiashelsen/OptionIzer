@@ -1,12 +1,12 @@
 #ifndef _TIMESERIES_HPP
 #define _TIMESERIES_HPP
 
-#include "myPDF.hpp"
+#include "MyPDF.hpp"
 #include <vector>
 #include <boost/random.hpp>
 #include <boost/random/mersenne_twister.hpp>
 
-class timeSeries
+class TimeSeries
 {
 private:
     int nPoints;
@@ -14,8 +14,8 @@ private:
     boost::mt19937 *rng;
 public:
     double **series;
-    timeSeries(int _nPoints, int _nSeries, myPDF *_PDF);
-    ~timeSeries();
+    TimeSeries(int _nPoints, int _nSeries, MyPDF *_PDF);
+    ~TimeSeries();
 };
 
 #endif
