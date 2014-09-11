@@ -91,7 +91,7 @@ double MyPDF::getPDFValue(double x)
 	}
 	else
 	{
-	    interpValue = PDF[index] + (1.0 - PDF[index])*(x - lowerBound)/binSpacing;
+	    interpValue = PDF[index] + (0.0 - PDF[index])*(x - lowerBound)/binSpacing;
 	}
 
 	return interpValue;
