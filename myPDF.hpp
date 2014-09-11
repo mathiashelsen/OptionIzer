@@ -1,3 +1,6 @@
+#ifndef _MYPDF_HPP
+#define _MYPDF_HPP
+
 #include <iostream>
 #include <math.h>
 
@@ -16,3 +19,5 @@ class myPDF{
 	~myPDF();
 	double drawRandom(double x);
 };
+
+#endif

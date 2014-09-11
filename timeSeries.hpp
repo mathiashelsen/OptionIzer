@@ -1,3 +1,6 @@
+#ifndef _TIMESERIES_HPP
+#define _TIMESERIES_HPP
+
 #include "myPDF.hpp"
 #include <vector>
 #include <boost/random.hpp>
@@ -8,8 +11,11 @@ class timeSeries
 private:
     int nPoints;
     int nSeries; 
-    double **series;
+    boost::mt19937 *rng;
 public:
-    timeSeries(int _nPoints, int _nSeries, myPDF *_PDF, boost::mt19937 *rng );
+    double **series;
+    timeSeries(int _nPoints, int _nSeries, myPDF *_PDF);
     ~timeSeries();
 };
+
+#endif

@@ -5,6 +5,7 @@
 #include <gsl/gsl_randist.h>
 
 #include "myPDF.hpp"
+#include "timeSeries.hpp"
 
 using namespace std;
 
@@ -27,11 +28,11 @@ int main(int argc, char **argv)
     }
 
     myPDF *newPDF = new myPDF(50, values, nValues);
-    for(int i = 0 ; i < 2000000; i++ )
-    {
-	cout << newPDF->drawRandom( ((double)rand())/(double)RAND_MAX )  << "\n";
-    }
+    timeSeries *newSeries = new timeSeries(2000, 2000, newPDF);
 
+    cout << newSeries->series[0][0] << ", " << newSeries->series[0][1] << ", " << newSeries->series[1][0] << "\n";
+
+    delete newSeries;
     delete newPDF;
     gsl_rng_free(r);
     return 0;
