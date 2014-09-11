@@ -4,7 +4,7 @@ MyPDF::MyPDF(int _nBins, std::vector<double> *x)
 {
     nBins = _nBins;
     // Local variables to be freed after initializing
-    double * tmpHisto = new double[nBins];
+    PDF = new double[nBins];
     maxValue = *(x->begin()), minValue = maxValue;
     // Allocating some memory for the inverse CDF
     CDF = new double[nBins+1];
@@ -24,21 +24,21 @@ MyPDF::MyPDF(int _nBins, std::vector<double> *x)
     for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
     {
 	index =(int) ( (*it - minValue) /binSpacing);
-	tmpHisto[index] = tmpHisto[index] + 1;
+	PDF[index] = PDF[index] + 1;
     }
     // from this the cumulative PDF
     CDF[0] = 0.0;
     for(int i = 1; i < nBins+1; i++)
     {
-	CDF[i] = CDF[i-1] + tmpHisto[i-1]/(double)nValues;
+	CDF[i] = CDF[i-1] + PDF[i-1]/(double)nValues;
     }
    
-    delete[] tmpHisto;
 }
 
 MyPDF::~MyPDF()
 {
     delete[] CDF;
+    delete[] PDF;
 }
 
 void MyPDF::getExtents(double *_minValue, double *_maxValue, double *_binSpacing)
@@ -75,6 +75,30 @@ double MyPDF::getCDFValue(double x)
 	else
 	{
 	    interpValue = CDF[index] + (1.0 - CDF[index])*(x - lowerBound)/binSpacing;
+	}
+
+	return interpValue;
+    }
+}
+
+double MyPDF::getPDFValue(double x)
+{
+    if( (x < minValue) || (x > (maxValue + binSpacing)) )
+    {
+	return 0.0;
+    }
+    else
+    {
+	int index = (int) ( (x - minValue) / binSpacing );
+	double lowerBound = binSpacing*(double)index + minValue;
+	double interpValue = 0.0;
+	if( index < nBins )
+	{
+	    interpValue = PDF[index] + (PDF[index+1] - PDF[index])*(x - lowerBound)/binSpacing;
+	}
+	else
+	{
+	    interpValue = PDF[index] + (1.0 - PDF[index])*(x - lowerBound)/binSpacing;
 	}
 
 	return interpValue;
