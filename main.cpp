@@ -1,5 +1,9 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <cstdlib>
+#include <vector>
+#include <string>
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
@@ -9,31 +13,33 @@
 
 using namespace std;
 
+void readFile(ifstream *file, vector<double> *data);
+
 int main(int argc, char **argv)
 {
-    const gsl_rng_type * T;
-    gsl_rng * r;
+    ifstream inputFile( argv[1] );
+    vector<double> values;
 
-    gsl_rng_env_setup();
+    readFile( &inputFile, &values );
 
-    T = gsl_rng_default;
-    r = gsl_rng_alloc (T);
-
-    int nValues = 20000;
-    double *values = new double[nValues];
-    for(int i = 0; i < nValues; i++)
-    {
-	values[i] = (double) gsl_ran_gaussian(r, 1.0);
-	//values[i] = ((double)rand())/(double)RAND_MAX;
-    }
-
-    myPDF *newPDF = new myPDF(50, values, nValues);
-    timeSeries *newSeries = new timeSeries(2000, 2000, newPDF);
+    myPDF *newPDF = new myPDF(50, &values);
+    timeSeries *newSeries = new timeSeries(90, 2000, newPDF);
 
     cout << newSeries->series[0][0] << ", " << newSeries->series[0][1] << ", " << newSeries->series[1][0] << "\n";
 
     delete newSeries;
     delete newPDF;
-    gsl_rng_free(r);
     return 0;
+}
+
+void readFile(ifstream *file, vector<double> *data)
+{
+    if(file->is_open())
+    {
+	string line;
+	while( getline( *file, line ) )
+	{
+	    data->push_back( atof( line.c_str() ) );
+	}
+    }
 }

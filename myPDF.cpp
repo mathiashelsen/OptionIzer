@@ -1,26 +1,29 @@
 #include "myPDF.hpp"
 
-myPDF::myPDF(int _nBins, double *x, int nValues)
+myPDF::myPDF(int _nBins, std::vector<double> *x)
 {
     nBins = _nBins;
     // Local variables to be freed after initializing
     double * tmpHisto = new double[nBins];
-    maxValue = x[0], minValue = x[0];
+    maxValue = *(x->begin()), minValue = maxValue;
     // Allocating some memory for the inverse CDF
     CDF = new double[nBins+1];
+    int nValues = 0;
     // Find minimal and maximal values
-    for(int i = 0; i < nValues; i++)
+    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
     {
-	maxValue = (x[i] > maxValue) ? x[i] : maxValue;
-	minValue = (x[i] < minValue) ? x[i] : minValue;
+	maxValue = (*it > maxValue) ? *it : maxValue;
+	minValue = (*it < minValue) ? *it : minValue;
+	nValues++;
     }
     // from these deduce the spacing between bins
     binSpacing = (maxValue - minValue)/((double) nBins);
     // so you can create the histogram
     int index = 0;
-    for(int i = 0; i < nValues; i++ )
+
+    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
     {
-	index =(int) ( (x[i] - minValue) /binSpacing);
+	index =(int) ( (*it - minValue) /binSpacing);
 	tmpHisto[index] = tmpHisto[index] + 1;
     }
     // from this the cumulative PDF

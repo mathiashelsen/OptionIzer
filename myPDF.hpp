@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <vector>
 
 class myPDF{
     private:
@@ -15,7 +16,7 @@ class myPDF{
 	void getExtents(double *_minValue, double *_maxValue, double *_binSpacing);
 	double getCDFValue(int i);
 	double getCDFValue(double x);
-	myPDF(int nBins, double *x, int nValues);
+	myPDF(int nBins, std::vector<double> *x);
 	~myPDF();
 	double drawRandom(double x);
 };
