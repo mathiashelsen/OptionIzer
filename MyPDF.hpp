@@ -19,6 +19,8 @@ class MyPDF{
 	double getCDFValue(double x);
 	double getPDFValue(double x);
 	double getPDF(vector<double> *ranges, vector<double> *values);
+	void generatePDF( std::vector<double> *x);
+	MyPDF(int _nBins) { nBins = _nBins; };
 	MyPDF(int nBins, std::vector<double> *x);
 	~MyPDF();
 	double drawRandom(double x);

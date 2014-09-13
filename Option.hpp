@@ -7,9 +7,10 @@
 class Option
 {
     protected:	
-	double r; // The riskless rate
+	double rate; // The riskless rate
+	double underlying; // The value of the underlying
     public:
-	void getValueDistribution(TimeSeries *walk, MyPDF *priceDistribution);
+	virtual void getValueDistribution(TimeSeries *walk, MyPDF *priceDistribution) {};
 };
 
 #endif

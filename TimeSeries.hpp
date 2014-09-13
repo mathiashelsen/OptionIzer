@@ -9,10 +9,10 @@
 class TimeSeries
 {
 private:
-    int nPoints;
-    int nSeries; 
     boost::mt19937 *rng;
 public:
+    int nPoints;
+    int nSeries; 
     double **series;
     TimeSeries(int _nPoints, int _nSeries, MyPDF *_PDF);
     ~TimeSeries();

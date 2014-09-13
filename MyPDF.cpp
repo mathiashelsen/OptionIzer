@@ -93,6 +93,40 @@ double MyPDF::getPDFValue(double x)
     }
 }
 
+void MyPDF::generatePDF(std::vector<double> *x)
+{
+    // Local variables to be freed after initializing
+    PDF = new double[nBins];
+    maxValue = *(x->begin()), minValue = maxValue;
+    // Allocating some memory for the inverse CDF
+    CDF = new double[nBins+1];
+    int nValues = 0;
+    // Find minimal and maximal values
+    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
+    {
+	maxValue = (*it > maxValue) ? *it : maxValue;
+	minValue = (*it < minValue) ? *it : minValue;
+	nValues++;
+    }
+    // from these deduce the spacing between bins
+    binSpacing = (maxValue - minValue)/((double) nBins);
+    // so you can create the histogram
+    int index = 0;
+
+    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
+    {
+	index =(int) ( (*it - minValue) /binSpacing);
+	PDF[index] = PDF[index] + 1;
+    }
+    // from this the cumulative PDF
+    CDF[0] = 0.0;
+    for(int i = 1; i < nBins+1; i++)
+    {
+	CDF[i] = CDF[i-1] + PDF[i-1]/(double)nValues;
+    }
+   
+}
+
 double MyPDF::drawRandom(double x)
 {
     double maxErr = 0.0001;
