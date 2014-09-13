@@ -15,10 +15,12 @@ class MyPDF{
 	double maxValue;
 	double *CDF;
 	double *PDF;
+	double avg;
     public:
 	double getCDFValue(double x);
 	double getPDFValue(double x);
 	double getPDF(vector<double> *ranges, vector<double> *values);
+	double getAverage();
 	void generatePDF( std::vector<double> *x);
 	MyPDF(int _nBins) { nBins = _nBins; };
 	MyPDF(int nBins, std::vector<double> *x);

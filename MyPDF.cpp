@@ -2,6 +2,7 @@
 
 MyPDF::MyPDF(int _nBins, std::vector<double> *x)
 {
+    avg = 0.0;
     nBins = _nBins;
     // Local variables to be freed after initializing
     PDF = new double[nBins];
@@ -25,12 +26,18 @@ MyPDF::MyPDF(int _nBins, std::vector<double> *x)
     {
 	index =(int) ( (*it - minValue) /binSpacing);
 	PDF[index] = PDF[index] + 1;
+	avg += *it;
     }
+    avg /= (double)nValues;
     // from this the cumulative PDF
     CDF[0] = 0.0;
     for(int i = 1; i < nBins+1; i++)
     {
 	CDF[i] = CDF[i-1] + PDF[i-1]/(double)nValues;
+    }
+    for(int i = 0 ; i < nBins; i++)
+    {
+	PDF[i] /= (double) nValues;
     }
    
 }
@@ -95,6 +102,7 @@ double MyPDF::getPDFValue(double x)
 
 void MyPDF::generatePDF(std::vector<double> *x)
 {
+    avg = 0.0;
     // Local variables to be freed after initializing
     PDF = new double[nBins];
     maxValue = *(x->begin()), minValue = maxValue;
@@ -117,14 +125,27 @@ void MyPDF::generatePDF(std::vector<double> *x)
     {
 	index =(int) ( (*it - minValue) /binSpacing);
 	PDF[index] = PDF[index] + 1;
+	avg += *it;
     }
+    avg /=(double)(nValues);
+
     // from this the cumulative PDF
     CDF[0] = 0.0;
     for(int i = 1; i < nBins+1; i++)
     {
 	CDF[i] = CDF[i-1] + PDF[i-1]/(double)nValues;
     }
+
+    for(int i = 0 ; i < nBins; i++)
+    {
+	PDF[i] /= (double) nValues;
+    }
    
+}
+
+double MyPDF::getAverage()
+{
+    return avg;
 }
 
 double MyPDF::drawRandom(double x)

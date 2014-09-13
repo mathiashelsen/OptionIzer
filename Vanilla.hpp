@@ -8,7 +8,7 @@ class VanillaOption : public Option
     protected:
 	double strike; // The strike price of the underlying
     public:
-	VanillaOption(double _r, double _S, bool _call, double _strike);
+	VanillaOption(double _r, double _S, double _strike);
 	virtual void getValueDistribution(TimeSeries *walk, MyPDF *callDist, MyPDF *putDist);
 };
 
