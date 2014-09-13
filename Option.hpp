@@ -10,7 +10,7 @@ class Option
 	double rate; // The riskless rate
 	double underlying; // The value of the underlying
     public:
-	virtual void getValueDistribution(TimeSeries *walk, MyPDF *priceDistribution) {};
+	virtual void getValueDistribution(TimeSeries *walk, MyPDF *callDist, MyPDF *putDist) {};
 };
 
 #endif
