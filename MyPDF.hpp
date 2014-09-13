@@ -5,6 +5,8 @@
 #include <math.h>
 #include <vector>
 
+using namespace std;
+
 class MyPDF{
     private:
 	int nBins;

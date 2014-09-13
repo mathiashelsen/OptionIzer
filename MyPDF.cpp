@@ -41,11 +41,6 @@ MyPDF::~MyPDF()
     delete[] PDF;
 }
 
-double MyPDF::getCDFValue(int i)
-{
-    return CDF[i];
-}
-
 double MyPDF::getCDFValue(double x)
 {
     if( x < minValue )
