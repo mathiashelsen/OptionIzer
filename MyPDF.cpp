@@ -3,6 +3,7 @@
 MyPDF::MyPDF(int _nBins, std::vector<double> *x)
 {
     avg = 0.0;
+    std = 0.0;
     nBins = _nBins;
     // Local variables to be freed after initializing
     PDF = new double[nBins];
@@ -16,7 +17,9 @@ MyPDF::MyPDF(int _nBins, std::vector<double> *x)
 	maxValue = (*it > maxValue) ? *it : maxValue;
 	minValue = (*it < minValue) ? *it : minValue;
 	nValues++;
+	avg += *it;
     }
+    avg /= (double)nValues;
     // from these deduce the spacing between bins
     binSpacing = (maxValue - minValue)/((double) nBins);
     // so you can create the histogram
@@ -26,9 +29,9 @@ MyPDF::MyPDF(int _nBins, std::vector<double> *x)
     {
 	index =(int) ( (*it - minValue) /binSpacing);
 	PDF[index] = PDF[index] + 1;
-	avg += *it;
+	std += (avg - *it)*(avg - *it);
     }
-    avg /= (double)nValues;
+    std = sqrt(std/ (-1.0 + (double)nValues) );
     // from this the cumulative PDF
     CDF[0] = 0.0;
     for(int i = 1; i < nBins+1; i++)
@@ -103,6 +106,7 @@ double MyPDF::getPDFValue(double x)
 void MyPDF::generatePDF(std::vector<double> *x)
 {
     avg = 0.0;
+    std = 0.0;
     // Local variables to be freed after initializing
     PDF = new double[nBins];
     maxValue = *(x->begin()), minValue = maxValue;
@@ -115,7 +119,9 @@ void MyPDF::generatePDF(std::vector<double> *x)
 	maxValue = (*it > maxValue) ? *it : maxValue;
 	minValue = (*it < minValue) ? *it : minValue;
 	nValues++;
+	avg += *it;
     }
+    avg /=(double)(nValues);
     // from these deduce the spacing between bins
     binSpacing = (maxValue - minValue)/((double) nBins);
     // so you can create the histogram
@@ -125,9 +131,9 @@ void MyPDF::generatePDF(std::vector<double> *x)
     {
 	index =(int) ( (*it - minValue) /binSpacing);
 	PDF[index] = PDF[index] + 1;
-	avg += *it;
+	std += (avg - *it)*(avg - *it);
     }
-    avg /=(double)(nValues);
+    std = sqrt(std / (-1.0 + (double)nValues) );
 
     // from this the cumulative PDF
     CDF[0] = 0.0;
@@ -151,29 +157,6 @@ double MyPDF::getAverage()
 double MyPDF::drawRandom(double x)
 {
     double maxErr = 0.0001;
-    /*
-    std::cout << x << "\n";
-    if( (x > CDF[1]) && (x < CDF[nBins] ) )
-    {
-	double x_0 = minValue;
-	double fx_0 = getCDFValue(x_0) - x;
-	double x_1 = maxValue;
-	double fx_1 = getCDFValue(x_1) - x;
-	double x_2 = x_1 - fx_1*((x_1 - x_0)/(fx_1 - fx_0));
-	double fx_2 = getCDFValue(x_2) - x;
-	while(fabs(fx_2) > maxErr)
-	{
-	    x_0 = x_1;
-	    fx_0 = fx_1;
-	    x_1 = x_2;
-	    fx_1 = fx_2;	
-	    x_2 = x_1 - fx_1*((x_1 - x_0)/(fx_1 - fx_0));
-	    fx_2 = getCDFValue(x_2) - x;
-	    std::cout << x_2 << "\t" << fx_2 << "\n";
-	}
-	return x_2;
-    }
-    */
     if( (x >= CDF[0]) && (x <= CDF[nBins]) )
     {
 	double l = minValue;

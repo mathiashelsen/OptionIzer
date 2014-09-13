@@ -23,21 +23,15 @@ int main(int argc, char **argv)
 
     readFile( &inputFile, &values );
 
-    MyPDF *newPDF = new MyPDF(50, &values);
-    TimeSeries *newSeries = new TimeSeries(90, 2000, newPDF);
+    MyPDF *newPDF = new MyPDF(100, &values);
+    TimeSeries *newSeries = new TimeSeries(90, 10000, newPDF);
     VanillaOption *option = new VanillaOption( 0.05, 191.28, 170.0 );
     MyPDF *callPDF = new MyPDF(100);
     MyPDF *putPDF = new MyPDF(100);
     option->getValueDistribution(newSeries, callPDF, putPDF);
 
-    cout << "Call avg: " << callPDF->getAverage() << "\n";
-    cout << "Put avg: " << putPDF->getAverage() << "\n";
-
-    for(int i = 0 ; i < 1000; i++ )
-    {
-	double x = 0.1 * (double)i; // Price between 0 and 30$
-//	cout << x << "\t" << callPDF->getPDFValue(x) << "\t" << putPDF->getPDFValue(x) << "\n";
-    }
+    cout << "Call avg: " << callPDF->getAverage() << " +/- " << callPDF->getStandardDev() << "\n";
+    cout << "Put  avg: " << putPDF->getAverage() << " +/- " << putPDF->getStandardDev() << "\n";
 
     delete newSeries;
     delete newPDF;
