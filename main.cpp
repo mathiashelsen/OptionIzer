@@ -23,9 +23,9 @@ int main(int argc, char **argv)
 
     readFile( &inputFile, &values );
 
-    MyPDF *newPDF = new MyPDF(100, &values);
-    TimeSeries *newSeries = new TimeSeries(90, 10000, newPDF);
-    VanillaOption *option = new VanillaOption( 0.05, 191.28, 170.0 );
+    MyPDF *newPDF = new MyPDF(200, &values, true);
+    TimeSeries *newSeries = new TimeSeries(65, 10000, newPDF);
+    VanillaOption *option = new VanillaOption( 0.05, 191.28, 190.0);
     MyPDF *callPDF = new MyPDF(100);
     MyPDF *putPDF = new MyPDF(100);
     option->getValueDistribution(newSeries, callPDF, putPDF);

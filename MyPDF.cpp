@@ -1,48 +1,9 @@
 #include "MyPDF.hpp"
 
-MyPDF::MyPDF(int _nBins, std::vector<double> *x)
+MyPDF::MyPDF(int _nBins, std::vector<double> *x, bool removeDrift)
 {
-    avg = 0.0;
-    std = 0.0;
     nBins = _nBins;
-    // Local variables to be freed after initializing
-    PDF = new double[nBins];
-    maxValue = *(x->begin()), minValue = maxValue;
-    // Allocating some memory for the inverse CDF
-    CDF = new double[nBins+1];
-    int nValues = 0;
-    // Find minimal and maximal values
-    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
-    {
-	maxValue = (*it > maxValue) ? *it : maxValue;
-	minValue = (*it < minValue) ? *it : minValue;
-	nValues++;
-	avg += *it;
-    }
-    avg /= (double)nValues;
-    // from these deduce the spacing between bins
-    binSpacing = (maxValue - minValue)/((double) nBins);
-    // so you can create the histogram
-    int index = 0;
-
-    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
-    {
-	index =(int) ( (*it - minValue) /binSpacing);
-	PDF[index] = PDF[index] + 1;
-	std += (avg - *it)*(avg - *it);
-    }
-    std = sqrt(std/ (-1.0 + (double)nValues) );
-    // from this the cumulative PDF
-    CDF[0] = 0.0;
-    for(int i = 1; i < nBins+1; i++)
-    {
-	CDF[i] = CDF[i-1] + PDF[i-1]/(double)nValues;
-    }
-    for(int i = 0 ; i < nBins; i++)
-    {
-	PDF[i] /= (double) nValues;
-    }
-   
+    this->generatePDF(x, removeDrift);
 }
 
 MyPDF::~MyPDF()
@@ -103,7 +64,7 @@ double MyPDF::getPDFValue(double x)
     }
 }
 
-void MyPDF::generatePDF(std::vector<double> *x)
+void MyPDF::generatePDF(std::vector<double> *x, bool removeDrift)
 {
     avg = 0.0;
     std = 0.0;
@@ -127,11 +88,26 @@ void MyPDF::generatePDF(std::vector<double> *x)
     // so you can create the histogram
     int index = 0;
 
-    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
+    if(removeDrift)
     {
-	index =(int) ( (*it - minValue) /binSpacing);
-	PDF[index] = PDF[index] + 1;
-	std += (avg - *it)*(avg - *it);
+	minValue -= avg;
+	maxValue -= avg;
+	for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
+	{
+	    index =(int) ( ((*it-avg) - minValue) /binSpacing);
+	    PDF[index] = PDF[index] + 1;
+	    std += (avg - *it)*(avg - *it);
+	}
+	avg = 0.0;
+    }
+    else
+    {
+	for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
+	{
+	    index =(int) ( (*it - minValue) /binSpacing);
+	    PDF[index] = PDF[index] + 1;
+	    std += (avg - *it)*(avg - *it);
+	}
     }
     std = sqrt(std / (-1.0 + (double)nValues) );
 

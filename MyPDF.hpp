@@ -23,9 +23,9 @@ class MyPDF{
 	double getPDF(vector<double> *ranges, vector<double> *values);
 	double getAverage();
 	double getStandardDev() { return std; };
-	void generatePDF( std::vector<double> *x);
+	void generatePDF( std::vector<double> *x, bool removeDrift);
 	MyPDF(int _nBins) { nBins = _nBins; };
-	MyPDF(int nBins, std::vector<double> *x);
+	MyPDF(int nBins, std::vector<double> *x, bool removeDrift);
 	~MyPDF();
 	double drawRandom(double x);
 };
