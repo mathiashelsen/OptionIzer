@@ -25,14 +25,14 @@ int main(int argc, char **argv)
 
     MyPDF *newPDF = new MyPDF(200, &values, true);
     TimeSeries *newSeries = new TimeSeries(65, 10000, newPDF);
-    EuropeanOption *option = new EuropeanOption( 0.05, 191.28, 190.0);
-    MyPDF *callPDF = new MyPDF(100);
-    MyPDF *putPDF = new MyPDF(100);
-    option->getValueDistribution(newSeries, callPDF, putPDF);
+    EuropeanOption *option = new EuropeanOption( 0.05, 191.28, 190.0, 100);
+    option->setWalk(newSeries);
+    option->evaluate();
 
-    cout << "Call avg: " << callPDF->getAverage() << " +/- " << callPDF->getStandardDev() << "\n";
-    cout << "Put  avg: " << putPDF->getAverage() << " +/- " << putPDF->getStandardDev() << "\n";
+    //cout << "Call avg: " << callPDF->getAverage() << " +/- " << callPDF->getStandardDev() << "\n";
+    //cout << "Put  avg: " << putPDF->getAverage() << " +/- " << putPDF->getStandardDev() << "\n";
 
+    delete option;
     delete newSeries;
     delete newPDF;
     return 0;
