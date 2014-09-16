@@ -21,7 +21,10 @@ void AmericanOption::evaluate()
 {
     // First calculate the final value for each of the random walks
     double *finalValues = new double[walk->nSeries];
+    // The pay off at each point in time for an option
     double *payoffs = new double[walk->nSeries];
+    // The risk free discounting rate for each time step (not limited to daily rate)
+    double stepRate = (1.0 - rate*0.001);
     for(int i = 0; i < walk->nSeries; i++)
     {
 	finalValues[i] = underlying;
