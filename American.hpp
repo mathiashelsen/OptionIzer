@@ -1,13 +1,21 @@
 #ifndef _AMERICAN_HPP
 #define _AMERICAN_HPP
 
+#include "Option.hpp"
+
+#include <gsl/gsl_sf.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_blas.h>
+
+static double WeighedLaguerre(double x, int n);
+
 class AmericanOption : public Option
 {
     protected:
 	double strike; // The strike price of the underlying
     public:
-	AmericanOption(double _r, double _S, double _strike);
-	virtual void getValueDistribution(TimeSeries *walk, MyPDF *callDist, MyPDF *putDist);
-}
+	AmericanOption(double rate, double underlying, double strik);
+	virtual void evaluate();
+};
 
 #endif
