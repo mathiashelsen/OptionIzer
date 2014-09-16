@@ -10,7 +10,7 @@
 
 #include "MyPDF.hpp"
 #include "TimeSeries.hpp"
-#include "Vanilla.hpp"
+#include "European.hpp"
 
 using namespace std;
 
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
     MyPDF *newPDF = new MyPDF(200, &values, true);
     TimeSeries *newSeries = new TimeSeries(65, 10000, newPDF);
-    VanillaOption *option = new VanillaOption( 0.05, 191.28, 190.0);
+    EuropeanOption *option = new EuropeanOption( 0.05, 191.28, 190.0);
     MyPDF *callPDF = new MyPDF(100);
     MyPDF *putPDF = new MyPDF(100);
     option->getValueDistribution(newSeries, callPDF, putPDF);

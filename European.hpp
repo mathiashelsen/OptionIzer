@@ -1,14 +1,14 @@
-#ifndef _VANILLA_HPP
-#define _VANILLA_HPP
+#ifndef _EUROPEAN_HPP
+#define _EUROPEAN_HPP
 
 #include "Option.hpp"
 
-class VanillaOption : public Option
+class EuropeanOption : public Option
 {
     protected:
 	double strike; // The strike price of the underlying
     public:
-	VanillaOption(double _r, double _S, double _strike);
+	EuropeanOption(double _r, double _S, double _strike);
 	virtual void getValueDistribution(TimeSeries *walk, MyPDF *callDist, MyPDF *putDist);
 };
 
