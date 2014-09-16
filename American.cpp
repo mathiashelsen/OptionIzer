@@ -19,13 +19,23 @@ static double WeighedLaguerre(double x, int n)
 
 void AmericanOption::evaluate()
 {
+    // First calculate the final value for each of the random walks
     double *finalValues = new double[walk->nSeries];
+    double *payoffs = new double[walk->nSeries];
     for(int i = 0; i < walk->nSeries; i++)
     {
-	double finalValue = underlying;
+	finalValues[i] = underlying;
 	for(int j = 0; j < walk->nPoints; j++)
 	{
-	    finalValue *= (1.0 + walk->series[i][j]);
+	    finalValues[i] *= (1.0 + walk->series[i][j]);
+	}
+    }
+    // Now going back from the final point in time, calculate the expected payoff and LS estimate
+    for(int i = walk->nPoints-1; i > -1; i-- )
+    {
+	for(int j = 0; j < walk->nSeries; j++)
+	{
+	    payoffs[j] = max(strike-finalValues[j], 0.0);
 	}
     }
 
