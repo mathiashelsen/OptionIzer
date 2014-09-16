@@ -24,7 +24,7 @@ void AmericanOption::evaluate()
     // The pay off at each point in time for an option
     double *payoffs = new double[walk->nSeries];
     // The risk free discounting rate for each time step (not limited to daily rate)
-    double stepRate = (1.0 - rate*0.001);
+    double stepRate = pow((1.0 + rate*0.001), -1.0/360.0);
     for(int i = 0; i < walk->nSeries; i++)
     {
 	finalValues[i] = underlying;
@@ -41,7 +41,8 @@ void AmericanOption::evaluate()
 	    payoffs[j] = max(strike-finalValues[j], 0.0);
 	}
     }
-
+    
+    delete[] payoffs;
     delete[] finalValues;
 
 }
