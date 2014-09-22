@@ -66,7 +66,7 @@ void AmericanOption::evaluate()
     double *payoffs = new double[walk->nSeries];
     double *currentPayoff = new double[walk->nSeries], *futurePayoff = new double[walk->nSeries];;
     // The risk free discounting rate for each time step (not limited to daily rate)
-    double stepRate = pow((1.0 + rate*0.001), -1.0/360.0);
+    double stepRate = pow((1.0 + rate*0.01), -1.0/360.0);
     int *exercise = new int[walk->nSeries];
     vector<double> x;
     vector<double> y;
