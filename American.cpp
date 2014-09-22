@@ -44,6 +44,16 @@ void AmericanOption::LSE_estimate(vector<double> *x, vector<double> *y, vector<d
     // Linear fitting without weights
     //
     lsfitlinear(newY, newX, info, c, rep);
+    ybar->erase(ybar->begin(), ybar->end());
+    for( unsigned int i = 0; i < x->size(); i++ )
+    {
+	double tmp = 0.0;
+	for(int j = 0; j < 4; j++)
+	{
+	    tmp += WeighedLaguerre(x->at(i), j)*c[j];
+	}
+	ybar->push_back(tmp);
+    }
 }
 
 void AmericanOption::evaluate()
