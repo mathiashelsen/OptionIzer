@@ -22,12 +22,12 @@ void AmericanOption::LSE_estimate(vector<double> *x, vector<double> *y, vector<d
     assert( x->size() == y->size() );
     double *X = new double[x->size()*4];
     double *Y = new double[y->size()];
-    for(unsigned int i = 0; i < x->size()*4; i++)
+    for(unsigned int i = 0; i < x->size(); i++)
     {
-	X[i] = WeighedLaguerre(x->at( i%(x->size())), i%4);
-    }
-    for(unsigned int i = 0; i < y->size(); i++)
-    {
+	for(int j = 0; j < 4; j++ )
+	{
+	    X[4*i+j] = WeighedLaguerre(x->at(i), j);
+	}
 	Y[i] = y->at(i);
     }
 
