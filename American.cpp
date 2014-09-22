@@ -54,6 +54,8 @@ void AmericanOption::LSE_estimate(vector<double> *x, vector<double> *y, vector<d
 	}
 	ybar->push_back(tmp);
     }
+    delete[] X;
+    delete[] Y;
 }
 
 void AmericanOption::evaluate()
