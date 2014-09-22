@@ -13,8 +13,9 @@ class AmericanOption : public Option
 {
     protected:
 	double strike; // The strike price of the underlying
+	LSE_estimate(vector<double> *x, vector<double> *y, vector<double> *ybar);
     public:
-	AmericanOption(double rate, double underlying, double strik);
+	AmericanOption(double rate, double underlying, double strike);
 	virtual void evaluate();
 };
 
