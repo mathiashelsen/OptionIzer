@@ -77,12 +77,12 @@ void AmericanOption::evaluate()
 	// Check if the estimated value is larger or smaller than the current payoff
 	for(int j = 0; j < estimate.size(); j++)
 	{
-	    int k = indices.at(j);
+	    int pathIndex = indices.at(j);
 	    
-	    if( currentPayoff[k] > estimate.at(k) )
+	    if( currentPayoff[pathIndex] > estimate.at(j) )
 	    {
-		payoffs[k] = currentPayoff;
-		exercise[k] = i;
+		payoffs[pathIndex] = currentPayoff;
+		exercise[pathIndex] = i;
 	    }
 	}
 
