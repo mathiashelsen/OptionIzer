@@ -17,6 +17,35 @@ static double WeighedLaguerre(double x, int n)
     }
 }
 
+void AmericanOption::LSE_estimate(vector<double> *x, vector<double> *y, vector<double> *ybar)
+{
+    assert( x->size() == y->size() );
+    double *X = new double[x->size()*4];
+    double *Y = new double[y->size()];
+    for(unsigned int i = 0; i < x->size()*4; i++)
+    {
+	X[i] = WeighedLaguerre(x->at( i%(x->size())), i%4);
+    }
+    for(unsigned int i = 0; i < y->size(); i++)
+    {
+	Y[i] = y->at(i);
+    }
+
+    alglib::real_1d_array newY;
+    newY.setcontent( y->size(), Y );
+    alglib::real_2d_array newX;
+    newX.setcontent( x->size(), 4, X); 
+
+    alglib::ae_int_t info;
+    alglib::real_1d_array c;
+    alglib::lsfitreport rep;
+
+    //
+    // Linear fitting without weights
+    //
+    lsfitlinear(newY, newX, info, c, rep);
+}
+
 void AmericanOption::evaluate()
 {
     // First calculate the final value for each of the random walks
@@ -31,6 +60,8 @@ void AmericanOption::evaluate()
     vector<double> y;
     vector<double> estimate;
     vector<int> indices;
+
+    // Calculate the final value for each path
     for(int i = 0; i < walk->nSeries; i++)
     {
 	finalValues[i] = underlying;
@@ -39,6 +70,7 @@ void AmericanOption::evaluate()
 	    finalValues[i] *= (1.0 + walk->series[i][j]);
 	}
     }
+
     // First the last point in time
     for(int j = 0 ; j < walk->nSeries; j++)
     {
@@ -59,6 +91,8 @@ void AmericanOption::evaluate()
 	indices.erase(indices.begin(), indices.end());
 	for(int j = 0; j < walk->nSeries; j++)
 	{
+	    // Discount the final value one step back
+	    finalValues[j] /= (1.0 + walk->series[i+1][j]); 
 	    // Calculate if the option is in the money
 	    currentPayoff[j] = max(strike-finalValues[j], 0.0);
 	    // if it is...
@@ -75,19 +109,19 @@ void AmericanOption::evaluate()
 	LSE_estimate(&x, &y, &estimate);
 
 	// Check if the estimated value is larger or smaller than the current payoff
-	for(int j = 0; j < estimate.size(); j++)
+	for(unsigned int j = 0; j < estimate.size(); j++)
 	{
 	    int pathIndex = indices.at(j);
 	    
 	    if( currentPayoff[pathIndex] > estimate.at(j) )
 	    {
-		payoffs[pathIndex] = currentPayoff;
+		payoffs[pathIndex] = currentPayoff[pathIndex];
 		exercise[pathIndex] = i;
 	    }
 	}
 
 	// Swap future and current payoff
-	tmp = futurePayoff;
+	double *tmp = futurePayoff;
 	futurePayoff = currentPayoff;
 	currentPayoff = tmp;
     }
