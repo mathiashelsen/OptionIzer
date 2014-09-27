@@ -72,6 +72,7 @@ void AmericanOption::evaluate()
     vector<double> y;
     vector<double> estimate;
     vector<int> indices;
+    putDist = new MyPDF(nBins);
 
     // Calculate the final value for each path
     for(int i = 0; i < walk->nSeries; i++)
@@ -86,7 +87,7 @@ void AmericanOption::evaluate()
     // First the last point in time
     for(int j = 0 ; j < walk->nSeries; j++)
     {
-	payoffs[j] = max(strike-finalValues[walk->nPoints - 1], 0.0);
+	payoffs[j] = max(strike-finalValues[j], 0.0);
 	futurePayoff[j] = payoffs[j];
 	if(payoffs[j] > 0.0)
 	{
@@ -137,9 +138,29 @@ void AmericanOption::evaluate()
 	futurePayoff = currentPayoff;
 	currentPayoff = tmp;
     }
+    
+    vector<double> putVals;
+    for(int i = 0; i < walk->nSeries; i++)
+    {
+	putVals.push_back( payoffs[i]*pow( stepRate, exercise[i] ) );
+    }
+    putDist->generatePDF(&putVals, false);
    
     delete[] exercise; 
     delete[] payoffs;
     delete[] finalValues;
 
 }
+
+AmericanOption::AmericanOption(double _rate, double _underlying, double _strike, int bins)
+{
+    rate = _rate;
+    underlying = _underlying;
+    strike = _strike;
+    nBins = bins;
+}
+
+AmericanOption::~AmericanOption()
+{
+    delete putDist;
+}   
