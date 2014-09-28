@@ -142,7 +142,14 @@ void AmericanOption::evaluate()
     vector<double> putVals;
     for(int i = 0; i < walk->nSeries; i++)
     {
-	putVals.push_back( payoffs[i]*pow( stepRate, exercise[i] ) );
+	if(payoffs[i] == 0.0)
+	{
+	    putVals.push_back( 0.0 );
+	}
+	else
+	{
+	    putVals.push_back( payoffs[i]*pow( stepRate, exercise[i] ) );
+	}
     }
     putDist->generatePDF(&putVals, false);
    
