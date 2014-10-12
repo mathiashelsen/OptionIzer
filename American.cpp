@@ -29,13 +29,13 @@ static double WeighedLaguerre(double x, int n)
 {
     switch(n)
     {
-	case 0: return exp(-x/2.0);
+	case 0: return 1.0;
 		break;
-	case 1: return (exp(-x/2.0)*(1.0 - x));
+	case 1: return (1.0 - x);
 		break;
-	case 2: return (exp(-x/2.0)*(1.0 - 2.0*x + x*x/2.0));
+	case 2: return (1.0 - 2.0*x + x*x/2.0);
 		break;
-	case 3: return (exp(-x/2.0)*(-x*x*x + 9.0*x*x -18.0*x + 6.0)/6.0);
+	case 3: return (-x*x*x + 9.0*x*x -18.0*x + 6.0)/6.0;
 		break;
 	default: return 0;
 		break;
@@ -89,7 +89,6 @@ void AmericanOption::evaluate()
     double *finalValues = new double[walk->nSeries];
     // The pay off at each point in time for an option
     double *payoffs = new double[walk->nSeries];
-    double *currentPayoff = new double[walk->nSeries], *futurePayoff = new double[walk->nSeries];;
     // The risk free discounting rate for each time step (not limited to daily rate)
     double stepRate = pow((1.0 + rate*0.01), -1.0/360.0);
     int *exercise = new int[walk->nSeries];
@@ -113,7 +112,6 @@ void AmericanOption::evaluate()
     for(int j = 0 ; j < walk->nSeries; j++)
     {
 	payoffs[j] = max(strike-finalValues[j], 0.0);
-	futurePayoff[j] = payoffs[j];
 	if(payoffs[j] > 0.0)
 	{
 	    exercise[j] = walk->nPoints - 1;
@@ -132,36 +130,29 @@ void AmericanOption::evaluate()
 	    // Discount the final value one step back
 	    finalValues[j] /= (1.0 + walk->series[i+1][j]); 
 	    // Calculate if the option is in the money
-	    currentPayoff[j] = max(strike-finalValues[j], 0.0);
 	    // if it is...
-	    if(currentPayoff[j] > 0.0)
+	    if(max(strike-finalValues[j], 0.0) > 0.0)
 	    {
 		//calculate what payoff lies in the future if it is not exercised
-		y.push_back(futurePayoff[j]*stepRate);
+		y.push_back(payoffs[j]);
 		x.push_back(finalValues[j]);
 		indices.push_back(j);
 	    }
 	}
 
-	// perform LSE estimate
+	// perform LS estimate
 	LSE_estimate(&x, &y, &estimate);
 
 	// Check if the estimated value is larger or smaller than the current payoff
 	for(unsigned int j = 0; j < estimate.size(); j++)
 	{
 	    int pathIndex = indices.at(j);
-	    
-	    if( currentPayoff[pathIndex] > estimate.at(j) )
+	    if( max(strike-finalValues[pathIndex], 0.0) > estimate.at(j) )
 	    {
-		payoffs[pathIndex] = currentPayoff[pathIndex];
+		payoffs[pathIndex] = max(strike-finalValues[pathIndex], 0.0)*stepRate;
 		exercise[pathIndex] = i;
 	    }
 	}
-
-	// Swap future and current payoff
-	double *tmp = futurePayoff;
-	futurePayoff = currentPayoff;
-	currentPayoff = tmp;
     }
     
     vector<double> putVals;
@@ -173,7 +164,7 @@ void AmericanOption::evaluate()
 	}
 	else
 	{
-	    putVals.push_back( payoffs[i]*pow( stepRate, exercise[i] ) );
+	    putVals.push_back( payoffs[i] );
 	}
     }
     putDist->generatePDF(&putVals, false);
