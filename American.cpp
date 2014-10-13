@@ -99,15 +99,22 @@ void AmericanOption::evaluate()
     putDist = new MyPDF(nBins);
 
     double avgFinal = 0.0;
+    double avgPutVal = 0.0;
+    std::cout << underlying << std::endl;
     // Calculate the final value for each path
     for(int i = 0; i < walk->nSeries; i++)
     {
 	finalValues[i] = underlying;
-	for(int j = 0; j < walk->nPoints; j++)
+    }
+
+    for(int j = 0; j < walk->nPoints; j++)
+    {
+	avgFinal = 0.0;
+	for(int i = 0; i < walk->nSeries; i++)
 	{
 	    finalValues[i] *= (1.0 + walk->series[i][j]);
+	    avgFinal += finalValues[i];
 	}
-	avgFinal += finalValues[i];
     }
 
     // First the last point in time
@@ -121,7 +128,6 @@ void AmericanOption::evaluate()
 	}
 	avgEx += (double)exercise[j];
     }
-    std::cout << avgEx/(double)walk->nSeries << std::endl;
 
     // Now going back in time, calculate the expected payoff and LS estimate
     for(int i = walk->nPoints-2; i > -1; i-- )
@@ -134,7 +140,7 @@ void AmericanOption::evaluate()
 	for(int j = 0; j < walk->nSeries; j++)
 	{
 	    // Discount the final value one step back
-	    finalValues[j] /= (1.0 + walk->series[i+1][j]); 
+	    finalValues[j] /= (1.0 + walk->series[i][j]); 
 	    avgFinal += finalValues[j];
 	    // Calculate if the option is in the money
 	    // if it is...
@@ -153,6 +159,7 @@ void AmericanOption::evaluate()
 	// Check if the estimated value is larger or smaller than the current payoff
 	int k = 0;
 	avgEx = 0.0;
+	avgPutVal = 0.0;
 	for(int j = 0; j < walk->nSeries; j++)
 	{
 	    if( (k < (int)indices.size()) && (indices.at(k) == j) )
@@ -168,10 +175,10 @@ void AmericanOption::evaluate()
 	    {
 		payoffs[j] *= stepRate; 
 	    }
-
+	    avgPutVal += payoffs[j];
 	    avgEx += (double)exercise[j];
 	}
-	std::cout << avgEx/(double)walk->nSeries << "\t" << avgFinal/(double)walk->nSeries << std::endl;
+	std::cout << avgEx/(double)walk->nSeries << "\t" << avgFinal/(double)walk->nSeries << "\t" << avgPutVal/(double)walk->nSeries << std::endl;
     }
     
     vector<double> putVals;
