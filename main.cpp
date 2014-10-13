@@ -50,19 +50,19 @@ int main(int argc, char **argv)
 
     MyPDF *newPDF = new MyPDF(200, &values, true);
     TimeSeries *newSeries = new TimeSeries(65, 10000, newPDF);
-    EuropeanOption *option = new EuropeanOption( 0.05, 191.28, 190.0, 100);
+//    EuropeanOption *option = new EuropeanOption( 0.05, 191.28, 190.0, 100);
     AmericanOption *american = new AmericanOption( 0.05, 191.28, 190.0, 100);
-    option->setWalk(newSeries);
-    option->evaluate();
+ //   option->setWalk(newSeries);
+ //   option->evaluate();
     american->setWalk(newSeries);
     american->evaluate();
 
     //cout << "Call avg: " << callPDF->getAverage() << " +/- " << callPDF->getStandardDev() << "\n";
-    cout << "European put  avg: " << option->getPutPriceDist()->getAverage() << "\n";
+   // cout << "European put  avg: " << option->getPutPriceDist()->getAverage() << "\n";
     cout << "American put  avg: " << american->getPutPriceDist()->getAverage() << "\n";
 
 
-    delete option;
+    //delete option;
     delete newSeries;
     delete newPDF;
     return 0;

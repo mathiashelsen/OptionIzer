@@ -98,6 +98,7 @@ void AmericanOption::evaluate()
     vector<int> indices;
     putDist = new MyPDF(nBins);
 
+    double avgFinal = 0.0;
     // Calculate the final value for each path
     for(int i = 0; i < walk->nSeries; i++)
     {
@@ -106,17 +107,21 @@ void AmericanOption::evaluate()
 	{
 	    finalValues[i] *= (1.0 + walk->series[i][j]);
 	}
+	avgFinal += finalValues[i];
     }
 
     // First the last point in time
+    double avgEx = 0.0;
     for(int j = 0 ; j < walk->nSeries; j++)
     {
 	payoffs[j] = max(strike-finalValues[j], 0.0);
 	if(payoffs[j] > 0.0)
 	{
-	    exercise[j] = walk->nPoints - 1;
+	    exercise[j] = 1;
 	}
+	avgEx += (double)exercise[j];
     }
+    std::cout << avgEx/(double)walk->nSeries << std::endl;
 
     // Now going back in time, calculate the expected payoff and LS estimate
     for(int i = walk->nPoints-2; i > -1; i-- )
@@ -125,10 +130,12 @@ void AmericanOption::evaluate()
 	y.erase(y.begin(), y.end());
 	estimate.erase(estimate.begin(), estimate.end());
 	indices.erase(indices.begin(), indices.end());
+	double avgFinal = 0.0;
 	for(int j = 0; j < walk->nSeries; j++)
 	{
 	    // Discount the final value one step back
 	    finalValues[j] /= (1.0 + walk->series[i+1][j]); 
+	    avgFinal += finalValues[j];
 	    // Calculate if the option is in the money
 	    // if it is...
 	    if(max(strike-finalValues[j], 0.0) > 0.0)
@@ -144,15 +151,27 @@ void AmericanOption::evaluate()
 	LSE_estimate(&x, &y, &estimate);
 
 	// Check if the estimated value is larger or smaller than the current payoff
-	for(unsigned int j = 0; j < estimate.size(); j++)
+	int k = 0;
+	avgEx = 0.0;
+	for(int j = 0; j < walk->nSeries; j++)
 	{
-	    int pathIndex = indices.at(j);
-	    if( max(strike-finalValues[pathIndex], 0.0) > estimate.at(j) )
+	    if( (k < (int)indices.size()) && (indices.at(k) == j) )
 	    {
-		payoffs[pathIndex] = max(strike-finalValues[pathIndex], 0.0)*stepRate;
-		exercise[pathIndex] = i;
+		if( max(strike-finalValues[j], 0.0) > estimate.at(k) )
+		{
+		    payoffs[j] = max(strike-finalValues[j], 0.0)*stepRate;
+		    exercise[j] = 1;
+		}
+		k++;
 	    }
+	    else
+	    {
+		payoffs[j] *= stepRate; 
+	    }
+
+	    avgEx += (double)exercise[j];
 	}
+	std::cout << avgEx/(double)walk->nSeries << "\t" << avgFinal/(double)walk->nSeries << std::endl;
     }
     
     vector<double> putVals;
