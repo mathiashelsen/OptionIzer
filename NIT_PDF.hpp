@@ -22,16 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef _MYPDF_HPP
-#define _MYPDF_HPP
+#ifndef _NIT_PDF_HPP
+#define _NIT_PDF_HPP
 
 #include <iostream>
 #include <math.h>
 #include <vector>
 
+#include "Generic_PDF.hpp"
+
 using namespace std;
 
-class MyPDF{
+class NIT_PDF : public Generic_PDF{
     private:
 	int nBins;
 	double binSpacing;

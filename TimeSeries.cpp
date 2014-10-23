@@ -1,6 +1,6 @@
 #include "TimeSeries.hpp"
 
-TimeSeries::TimeSeries(int _nPoints, int _nSeries, MyPDF *_PDF)
+TimeSeries::TimeSeries(int _nPoints, int _nSeries, double _initial, Generic_PDF *_PDF)
 {
     rng = new boost::mt19937();
     nPoints = _nPoints;
@@ -10,9 +10,10 @@ TimeSeries::TimeSeries(int _nPoints, int _nSeries, MyPDF *_PDF)
     for(int i = 0; i < nSeries; i++)
     {
 	series[i] = new double[nPoints];
-	for(int j = 0; j < nPoints; j++)
+	series[i][0] = initial;
+	for(int j = 1; j < nPoints; j++)
 	{
-	    series[i][j] = _PDF->drawRandom(generator());
+	    series[i][j] = series[i][j-1]*(_PDF->drawRandom(generator()));
 	}
     }
 }

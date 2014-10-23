@@ -1,18 +1,18 @@
-#include "MyPDF.hpp"
+#include "NIT_PDF.hpp"
 
-MyPDF::MyPDF(int _nBins, std::vector<double> *x, bool removeDrift)
+NIT_PDF::NIT_PDF(int _nBins, std::vector<double> *x, bool removeDrift)
 {
     nBins = _nBins;
     this->generatePDF(x, removeDrift);
 }
 
-MyPDF::~MyPDF()
+NIT_PDF::~NIT_PDF()
 {
     delete[] CDF;
     delete[] PDF;
 }
 
-double MyPDF::getCDFValue(double x)
+double NIT_PDF::getCDFValue(double x)
 {
     if( x < minValue )
     {
@@ -40,7 +40,7 @@ double MyPDF::getCDFValue(double x)
     }
 }
 
-double MyPDF::getPDFValue(double x)
+double NIT_PDF::getPDFValue(double x)
 {
     if( (x < minValue) || (x > (maxValue + binSpacing)) )
     {
@@ -64,7 +64,7 @@ double MyPDF::getPDFValue(double x)
     }
 }
 
-void MyPDF::generatePDF(std::vector<double> *x, bool removeDrift)
+void NIT_PDF::generatePDF(std::vector<double> *x, bool removeDrift)
 {
     avg = 0.0;
     std = 0.0;
@@ -125,12 +125,12 @@ void MyPDF::generatePDF(std::vector<double> *x, bool removeDrift)
    
 }
 
-double MyPDF::getAverage()
+double NIT_PDF::getAverage()
 {
     return avg;
 }
 
-double MyPDF::drawRandom(double x)
+double NIT_PDF::drawRandom(double x)
 {
     double maxErr = 0.0001;
     if( (x >= CDF[0]) && (x <= CDF[nBins]) )
