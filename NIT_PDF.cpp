@@ -1,11 +1,5 @@
 #include "NIT_PDF.hpp"
 
-NIT_PDF::NIT_PDF(int _nBins, std::vector<double> *x, bool removeDrift)
-{
-    nBins = _nBins;
-    this->generatePDF(x, removeDrift);
-}
-
 NIT_PDF::~NIT_PDF()
 {
     delete[] CDF;
@@ -64,7 +58,7 @@ double NIT_PDF::getPDFValue(double x)
     }
 }
 
-void NIT_PDF::generatePDF(std::vector<double> *x, bool removeDrift)
+void NIT_PDF::generatePDF(std::vector<double> *x)
 {
     avg = 0.0;
     std = 0.0;
@@ -88,26 +82,11 @@ void NIT_PDF::generatePDF(std::vector<double> *x, bool removeDrift)
     // so you can create the histogram
     int index = 0;
 
-    if(removeDrift)
+    for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
     {
-	minValue -= avg;
-	maxValue -= avg;
-	for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
-	{
-	    index =(int) ( ((*it-avg) - minValue) /binSpacing);
-	    PDF[index] = PDF[index] + 1;
-	    std += (avg - *it)*(avg - *it);
-	}
-	avg = 0.0;
-    }
-    else
-    {
-	for(std::vector<double>::iterator it = x->begin(); it != x->end(); ++it)
-	{
-	    index =(int) ( (*it - minValue) /binSpacing);
-	    PDF[index] = PDF[index] + 1;
-	    std += (avg - *it)*(avg - *it);
-	}
+	index =(int) ( (*it - minValue) /binSpacing);
+	PDF[index] = PDF[index] + 1;
+	std += (avg - *it)*(avg - *it);
     }
     std = sqrt(std / (-1.0 + (double)nValues) );
 
@@ -123,6 +102,14 @@ void NIT_PDF::generatePDF(std::vector<double> *x, bool removeDrift)
 	PDF[i] /= (double) nValues;
     }
    
+}
+
+void NIT_PDF::setDrift( double drift )
+{
+    double err = (avg - drift);
+    minValue -= err;
+    maxValue -= err; 
+    avg = drift;
 }
 
 double NIT_PDF::getAverage()

@@ -44,15 +44,16 @@ class NIT_PDF : public Generic_PDF{
 	double avg;
 	double std;
     public:
+	NIT_PDF(int _nBins) { nBins = _nBins; };
+	~NIT_PDF();
+
 	double getCDFValue(double x);
 	double getPDFValue(double x);
 	double getPDF(vector<double> *ranges, vector<double> *values);
 	double getAverage();
 	double getStandardDev() { return std; };
-	void generatePDF( std::vector<double> *x, bool removeDrift);
-	MyPDF(int _nBins) { nBins = _nBins; };
-	MyPDF(int nBins, std::vector<double> *x, bool removeDrift);
-	~MyPDF();
+	void generatePDF( std::vector<double> *x );
+	void setDrift( double drift );
 	double drawRandom(double x);
 };
 

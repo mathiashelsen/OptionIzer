@@ -10,7 +10,7 @@ TimeSeries::TimeSeries(int _nPoints, int _nSeries, double _initial, Generic_PDF 
     for(int i = 0; i < nSeries; i++)
     {
 	series[i] = new double[nPoints];
-	series[i][0] = initial;
+	series[i][0] = _initial;
 	for(int j = 1; j < nPoints; j++)
 	{
 	    series[i][j] = series[i][j-1]*(_PDF->drawRandom(generator()));

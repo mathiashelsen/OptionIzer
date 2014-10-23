@@ -18,20 +18,16 @@ void EuropeanOption::evaluate()
 {
     vector<double> callOptionValues;
     vector<double> putOptionValues;
-    callDist = new MyPDF(nBins);
-    putDist = new MyPDF(nBins);
+    callDist = new NIT_PDF(nBins);
+    putDist = new NIT_PDF(nBins);
     double discount = pow((1.0 + rate/100.0), -(double)walk->nPoints / 360.0);
     for(int i = 0; i < walk->nSeries; i++)
     {
-	double finalValue = underlying;
-	for(int j = 0; j < walk->nPoints; j++)
-	{
-	    finalValue *= (1.0 + walk->series[i][j]);
-	}
+	double finalValue = walk->series[i][walk->nPoints -1];
 	callOptionValues.push_back( (finalValue > strike) ? (finalValue - strike)*discount : 0.0 );
 	putOptionValues.push_back( (strike > finalValue) ? (strike - finalValue)*discount : 0.0 );
     }
-    callDist->generatePDF(&callOptionValues, false);
-    putDist->generatePDF(&putOptionValues, false);
+    callDist->generatePDF(&callOptionValues);
+    putDist->generatePDF(&putOptionValues);
 }
 

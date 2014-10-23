@@ -96,7 +96,7 @@ void AmericanOption::evaluate()
     vector<double> y;
     vector<double> estimate;
     vector<int> indices;
-    putDist = new MyPDF(nBins);
+    putDist = new NIT_PDF(nBins);
 
     double avgFinal = 0.0;
     double avgPutVal = 0.0;
@@ -193,7 +193,7 @@ void AmericanOption::evaluate()
 	    putVals.push_back( payoffs[i] );
 	}
     }
-    putDist->generatePDF(&putVals, false);
+    putDist->generatePDF(&putVals);
    
     delete[] exercise; 
     delete[] payoffs;

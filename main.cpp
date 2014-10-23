@@ -32,7 +32,8 @@ THE SOFTWARE.
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#include "MyPDF.hpp"
+#include "Generic_PDF.hpp"
+#include "NIT_PDF.hpp"
 #include "TimeSeries.hpp"
 #include "European.hpp"
 #include "American.hpp"
@@ -48,21 +49,11 @@ int main(int argc, char **argv)
 
     readFile( &inputFile, &values );
 
-    MyPDF *newPDF = new MyPDF(200, &values, true);
-    TimeSeries *newSeries = new TimeSeries(65, 10000, newPDF);
-    EuropeanOption *option = new EuropeanOption( 0.05, 191.28, 180.0, 100);
-    AmericanOption *american = new AmericanOption( 0.05, 191.28, 180.0, 100);
-    option->setWalk(newSeries);
-    option->evaluate();
-    american->setWalk(newSeries);
-    american->evaluate();
+    NIT_PDF *newPDF = new NIT_PDF(200);
+    newPDF->generatePDF(&values);
+    Generic_PDF *p = newPDF;
+    TimeSeries *newSeries = new TimeSeries(65, 10000, 1.0, p);
 
-    //cout << "Call avg: " << callPDF->getAverage() << " +/- " << callPDF->getStandardDev() << "\n";
-    cout << "European put  avg: " << option->getPutPriceDist()->getAverage() << "\n";
-    cout << "American put  avg: " << american->getPutPriceDist()->getAverage() << "\n";
-
-
-    //delete option;
     delete newSeries;
     delete newPDF;
     return 0;

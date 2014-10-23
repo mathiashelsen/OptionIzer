@@ -6,23 +6,23 @@
 using namespace std;
 
 #include "TimeSeries.hpp"
-#include "MyPDF.hpp"
+#include "NIT_PDF.hpp"
 
 class Option
 {
     protected:	
 	double rate; // The riskless rate
 	double underlying; // The value of the underlying
-	MyPDF *callDist;
-	MyPDF *putDist;
+	NIT_PDF *callDist;
+	NIT_PDF *putDist;
 	int nBins;
 	TimeSeries *walk;
     public:
 	virtual ~Option();
 	virtual void evaluate() {};
 	void setWalk( TimeSeries *_walk ) { walk = _walk; };
-	MyPDF* getCallPriceDist() { return callDist; };
-	MyPDF* getPutPriceDist() { return putDist; };
+	NIT_PDF *getCallPriceDist() { return callDist; };
+	NIT_PDF *getPutPriceDist() { return putDist; };
 };
 
 #endif

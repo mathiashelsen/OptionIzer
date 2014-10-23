@@ -28,6 +28,7 @@ THE SOFTWARE.
 class Generic_PDF
 {
     public:
+	virtual ~Generic_PDF();
 	virtual double drawRandom(double x);
 };
 
