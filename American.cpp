@@ -91,47 +91,31 @@ void AmericanOption::evaluate()
     double *payoffs = new double[walk->nSeries];
     // The risk free discounting rate for each time step (not limited to daily rate)
     double discount = exp( -(rate/100.0)/360.0 );
-    int *exercise = new int[walk->nSeries];
+
     vector<double> x;
     vector<double> y;
     vector<double> estimate;
     vector<int> indices;
     putDist = new NIT_PDF(nBins);
 
-    double avgFinal = 0.0;
-    double avgPutVal = 0.0;
-    std::cout << underlying << std::endl;
-    // Calculate the final value for each path
-    for(int i = 0; i < walk->nSeries; i++)
+    // First the last point in time
+    for(int i = 0 ; i < walk->nSeries; i++)
     {
 	finalValues[i] = walk->series[i][walk->nPoints-1];
-    }
-
-    // First the last point in time
-    double avgEx = 0.0;
-    for(int j = 0 ; j < walk->nSeries; j++)
-    {
-	payoffs[j] = max(strike-finalValues[j], 0.0);
-	if(payoffs[j] > 0.0)
-	{
-	    exercise[j] = 1;
-	}
-	avgEx += (double)exercise[j];
+	payoffs[i] = max(strike-finalValues[i], 0.0);
     }
 
     // Now going back in time, calculate the expected payoff and LS estimate
-    for(int i = walk->nPoints-2; i > -1; i-- )
+    for(int i = walk->nPoints-2; i > 0; i-- )
     {
 	x.erase(x.begin(), x.end());
 	y.erase(y.begin(), y.end());
 	estimate.erase(estimate.begin(), estimate.end());
 	indices.erase(indices.begin(), indices.end());
-	double avgFinal = 0.0;
 	for(int j = 0; j < walk->nSeries; j++)
 	{
 	    // Discount the final value one step back
-	    finalValues[j] /= (1.0 + walk->series[i][j]); 
-	    avgFinal += finalValues[j];
+	    finalValues[j] = walk->series[j][i]; 
 	    // Calculate if the option is in the money
 	    // if it is...
 	    if(max(strike-finalValues[j], 0.0) > 0.0)
@@ -148,44 +132,34 @@ void AmericanOption::evaluate()
 
 	// Check if the estimated value is larger or smaller than the current payoff
 	int k = 0;
-	avgEx = 0.0;
-	avgPutVal = 0.0;
 	for(int j = 0; j < walk->nSeries; j++)
 	{
 	    if( (k < (int)indices.size()) && (indices.at(k) == j) )
 	    {
 		if( max(strike-finalValues[j], 0.0) > estimate.at(k) )
 		{
-		    payoffs[j] = max(strike-finalValues[j], 0.0)*stepRate;
-		    exercise[j] = 1;
+		    payoffs[j] = max(strike-finalValues[j], 0.0);
+		}
+		else
+		{
+		    payoffs[j] *= discount; 
 		}
 		k++;
 	    }
 	    else
 	    {
-		payoffs[j] *= stepRate; 
+		payoffs[j] *= discount; 
 	    }
-	    avgPutVal += payoffs[j];
-	    avgEx += (double)exercise[j];
 	}
-	std::cout << avgEx/(double)walk->nSeries << "\t" << avgFinal/(double)walk->nSeries << "\t" << avgPutVal/(double)walk->nSeries << std::endl;
     }
     
     vector<double> putVals;
     for(int i = 0; i < walk->nSeries; i++)
     {
-	if(payoffs[i] == 0.0)
-	{
-	    putVals.push_back( 0.0 );
-	}
-	else
-	{
-	    putVals.push_back( payoffs[i] );
-	}
+	putVals.push_back( payoffs[i] );
     }
     putDist->generatePDF(&putVals);
    
-    delete[] exercise; 
     delete[] payoffs;
     delete[] finalValues;
 

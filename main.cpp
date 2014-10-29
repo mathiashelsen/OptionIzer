@@ -49,15 +49,23 @@ int main(int argc, char **argv)
 
     readFile( &inputFile, &values );
 
+    double r = 3.0;
     NIT_PDF *newPDF = new NIT_PDF(200);
     newPDF->generatePDF(&values);
+    newPDF->setDrift(exp(r/3.6e4) - 1.0);
     Generic_PDF *p = newPDF;
     TimeSeries *newSeries = new TimeSeries(65, 10000, 100.0, p);
-    EuropeanOption euro(0.3, 100.0, 100.0, 50);
+    EuropeanOption euro(r, 100.0, 100.0, 50);
+    AmericanOption american(r, 100.0, 100.0, 50);
     euro.setWalk( newSeries );
     euro.evaluate();
-    NIT_PDF *euroCall = euro.getCallPriceDist();
-    cout << "Euro call: " << euroCall->getAverage() << endl;
+    american.setWalk( newSeries );
+    american.evaluate();
+    
+    NIT_PDF *euroPut = euro.getPutPriceDist();
+    cout << "Euro put: " << euroPut->getAverage() << endl;
+    NIT_PDF *americanPut = american.getPutPriceDist();
+    cout << "American put: " << americanPut->getAverage() << endl;
 
     delete newSeries;
     delete newPDF;
