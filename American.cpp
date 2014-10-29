@@ -90,7 +90,7 @@ void AmericanOption::evaluate()
     // The pay off at each point in time for an option
     double *payoffs = new double[walk->nSeries];
     // The risk free discounting rate for each time step (not limited to daily rate)
-    double stepRate = pow((1.0 + rate*0.01), -1.0/360.0);
+    double discount = exp( -(rate/100.0)/360.0 );
     int *exercise = new int[walk->nSeries];
     vector<double> x;
     vector<double> y;
@@ -104,17 +104,7 @@ void AmericanOption::evaluate()
     // Calculate the final value for each path
     for(int i = 0; i < walk->nSeries; i++)
     {
-	finalValues[i] = underlying;
-    }
-
-    for(int j = 0; j < walk->nPoints; j++)
-    {
-	avgFinal = 0.0;
-	for(int i = 0; i < walk->nSeries; i++)
-	{
-	    finalValues[i] *= (1.0 + walk->series[i][j]);
-	    avgFinal += finalValues[i];
-	}
+	finalValues[i] = walk->series[i][walk->nPoints-1];
     }
 
     // First the last point in time
