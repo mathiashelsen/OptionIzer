@@ -52,7 +52,12 @@ int main(int argc, char **argv)
     NIT_PDF *newPDF = new NIT_PDF(200);
     newPDF->generatePDF(&values);
     Generic_PDF *p = newPDF;
-    TimeSeries *newSeries = new TimeSeries(65, 10000, 1.0, p);
+    TimeSeries *newSeries = new TimeSeries(65, 10000, 100.0, p);
+    EuropeanOption euro(0.3, 100.0, 100.0, 50);
+    euro.setWalk( newSeries );
+    euro.evaluate();
+    NIT_PDF *euroCall = euro.getCallPriceDist();
+    cout << "Euro call: " << euroCall->getAverage() << endl;
 
     delete newSeries;
     delete newPDF;

@@ -20,7 +20,8 @@ void EuropeanOption::evaluate()
     vector<double> putOptionValues;
     callDist = new NIT_PDF(nBins);
     putDist = new NIT_PDF(nBins);
-    double discount = pow((1.0 + rate/100.0), -(double)walk->nPoints / 360.0);
+    double discount = exp( -(rate/100.0)*(double)walk->nPoints / 360.0 );
+    //#pragma omp parallel for
     for(int i = 0; i < walk->nSeries; i++)
     {
 	double finalValue = walk->series[i][walk->nPoints -1];

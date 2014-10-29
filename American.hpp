@@ -4,8 +4,8 @@
 #include <assert.h>
 
 #include "Option.hpp"
-#include "ap.h"
-#include "interpolation.h"
+#include "linalg/ap.h"
+#include "linalg/interpolation.h"
 
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_matrix.h>

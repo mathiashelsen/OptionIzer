@@ -13,7 +13,8 @@ TimeSeries::TimeSeries(int _nPoints, int _nSeries, double _initial, Generic_PDF 
 	series[i][0] = _initial;
 	for(int j = 1; j < nPoints; j++)
 	{
-	    series[i][j] = series[i][j-1]*(_PDF->drawRandom(generator()));
+	    double u = _PDF->drawRandom(generator());
+	    series[i][j] = series[i][j-1]*(1.0 + u);
 	}
     }
 }

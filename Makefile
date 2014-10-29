@@ -66,10 +66,10 @@ MY_LIBS   = -pthread -lm -lgsl -lgslcblas
 CPPFLAGS  = -Wall
 
 # The options used in linking as well as in any direct use of ld.
-LDFLAGS   =  -lgsl -lgslcblas
+LDFLAGS   =  -lgsl -lgslcblas 
 # The directories in which source files reside.
 # If not specified, only the current directory will be serached.
-SRCDIRS   = .
+SRCDIRS   = . linalg
 
 # The executable file name.
 # If not specified, current directory name or `a.out' will be used.
@@ -87,8 +87,8 @@ HDREXTS = .h .H .hh .hpp .HPP .h++ .hxx .hp
 
 # The pre-processor and compiler options.
 # Users can override those variables from the command line.
-CFLAGS  = -g
-CXXFLAGS= -g
+CFLAGS  = -g -fopenmp
+CXXFLAGS= -g -fopenmp
 
 # The C program compiler.
 CC     = gcc
@@ -121,7 +121,7 @@ ifeq ($(PROGRAM),)
   endif
 endif
 ifeq ($(SRCDIRS),)
-  SRCDIRS = .
+  SRCDIRS = . 
 endif
 SOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
 HEADERS = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(HDREXTS))))
