@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     TimeSeries *newSeries = new TimeSeries(65, 10000, 100.0, p);
     EuropeanOption euro(r, 100.0, 100.0, 50);
     AmericanOption american(r, 100.0, 100.0, 50);
-    BlackScholes bs(100.0, 100.0, sigma, r/100.0, 65.0);
+    BlackScholes bs(100.0, 100.0, sigma, r/3.6e4, 65.0);
     euro.setWalk( newSeries );
     euro.evaluate();
     american.setWalk( newSeries );
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     cout << "Euro put: " << euroPut->getAverage() << endl;
     NIT_PDF *americanPut = american.getPutPriceDist();
     cout << "American put: " << americanPut->getAverage() << endl;
-    cout << "Black-Scholes put: " << bsPut << endl;
+    cout << "Black-Scholes put: " << bsPut << ", and call: " << bsCall << endl;
 
     delete newSeries;
     delete newPDF;
