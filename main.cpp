@@ -37,6 +37,7 @@ THE SOFTWARE.
 #include "TimeSeries.hpp"
 #include "European.hpp"
 #include "American.hpp"
+#include "BlackScholes.hpp"
 
 using namespace std;
 
@@ -53,19 +54,24 @@ int main(int argc, char **argv)
     NIT_PDF *newPDF = new NIT_PDF(200);
     newPDF->generatePDF(&values);
     newPDF->setDrift(exp(r/3.6e4) - 1.0);
+    double sigma = newPDF->getStandardDev();
     Generic_PDF *p = newPDF;
     TimeSeries *newSeries = new TimeSeries(65, 10000, 100.0, p);
     EuropeanOption euro(r, 100.0, 100.0, 50);
     AmericanOption american(r, 100.0, 100.0, 50);
+    BlackScholes bs(100.0, 100.0, sigma, r/100.0, 65.0);
     euro.setWalk( newSeries );
     euro.evaluate();
     american.setWalk( newSeries );
     american.evaluate();
+    double bsCall = 0.0, bsPut = 0.0;
+    bs.evaluate(&bsCall, &bsPut);
     
     NIT_PDF *euroPut = euro.getPutPriceDist();
     cout << "Euro put: " << euroPut->getAverage() << endl;
     NIT_PDF *americanPut = american.getPutPriceDist();
     cout << "American put: " << americanPut->getAverage() << endl;
+    cout << "Black-Scholes put: " << bsPut << endl;
 
     delete newSeries;
     delete newPDF;

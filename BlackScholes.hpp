@@ -21,8 +21,8 @@ class BlackScholes
 	    double _volatility,
 	    double _riskless,
 	    double _T);
-	~BlackScholes() = {};
-	evaluate(double *call, double *put);
+	~BlackScholes() {};
+	void evaluate(double *call, double *put);
 
 };
 
