@@ -58,22 +58,31 @@ int main(int argc, char **argv)
 
     double i = 0.1;
     double S0 = 100.0;
+    double T = 65.0;
     BlackScholes bs(S0, 100.0, sigma, r/3.6e4, 65.0);
-    while( i <= 2.0 )
+    while( T > 0.0 )
     {
+	i = 0.1;
+	while( i <= 2.0 )
+	{
 	bs.setS0(S0*i);	
 	double a = 0.0, b = 0.0;
 
-	std::cout << S0*i << "\t";
+	std::cout << T << "\t" << S0*i << "\t";
 	bs.calcDelta(&a, &b);
 	std::cout << a << "\t";
 	bs.calcGamma(&a, &b);
 	std::cout << a << "\t";
 	bs.calcVega(&a, &b);
+	std::cout << a << "\t";
+	bs.calcTheta(&a, &b);
 	std::cout << a << "\n";
 
-	i += 0.0005;
-
+	i += 0.005;
+	}
+	std::cout << "\n";
+	T -= 1.0;
+	bs.setT(T);
     }
 
     delete newPDF;

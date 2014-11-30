@@ -100,5 +100,8 @@ void BlackScholes::calcVega(double *vegaCall, double *vegaPut)
 
 void BlackScholes::calcTheta( double *thetaCall, double *thetaPut)
 {
-
+    double d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+    double d2 = d1 - sigma*sqrt(T);
+    *thetaCall = -S0*sigma*exp(-d1*d1*0.5)/(SQRT2PI*2.0*sqrt(T)) - r*K*exp(-r*T)*NCDF(0.0, 1.0, d2);
+    *thetaPut = -S0*sigma*exp(-d1*d1*0.5)/(SQRT2PI*2.0*sqrt(T)) + r*K*exp(-r*T)*NCDF(0.0, 1.0, -d2);
 }
