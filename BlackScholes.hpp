@@ -39,6 +39,10 @@ class BlackScholes
 	double sigma;
 	double r;
 	double T;
+	double d1;
+	double d2;
+
+	void recalcd();
 
     public:
 	BlackScholes(double _underlying,
@@ -48,10 +52,10 @@ class BlackScholes
 	    double _T );
 	~BlackScholes() {};
 
-	void setS0(double _S0){ S0 = _S0; };
-	void setK(double _K){ K = _K; };
-	void setSigma(double _sigma){ sigma = _sigma; };
-	void setT(double _T){ T = _T; };
+	void setS0(double _S0){ S0 = _S0; recalcd(); };
+	void setK(double _K){ K = _K; recalcd(); };
+	void setSigma(double _sigma){ sigma = _sigma; recalcd(); };
+	void setT(double _T){ T = _T; recalcd(); };
 	
 	void calcPrice(double *call, double *put);
 	void calcIVCall(double callPrice, double *callIV);

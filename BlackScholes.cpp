@@ -42,13 +42,14 @@ BlackScholes::BlackScholes(double _underlying,
     T = _T;
 }
 
-void BlackScholes::calcPrice(double *call, double *put)
+void BlackScholes::recalcd()
 {
-    double d1 = 0.0;
-    double d2 = 0.0;
     d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
     d2 = d1 - sigma*sqrt(T);
+}
 
+void BlackScholes::calcPrice(double *call, double *put)
+{
     *call = NCDF(0.0, 1.0, d1)*S0 - NCDF(0.0, 1.0, d2)*K*exp(-T*r);
     *put = K*exp(-T*r) - S0 + *call;
 }
@@ -62,8 +63,7 @@ void BlackScholes::calcIVCall(double callPrice, double *callIV)
     double d2 = 0.0;
     while(fabs(sigmaErr) > 1.0e-6)
     {	
-	d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
-	d2 = d1 - sigma*sqrt(T);
+	recalcd();
 	fn = NCDF(0.0, 1.0, d1)*S0 - NCDF(0.0, 1.0, d2)*K*exp(-T*r) - callPrice;	
 	dfn = S0*sqrt(T)*exp(-d1*d1*0.5)/SQRT2PI;
 	sigmaErr = fn/dfn;
@@ -75,33 +75,24 @@ void BlackScholes::calcIVCall(double callPrice, double *callIV)
 
 void BlackScholes::calcDelta(double *deltaCall, double *deltaPut)
 {
-    double d1 = 0.0;
-    d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
-
     *deltaCall = NCDF(0.0, 1.0, d1);
     *deltaPut = *deltaCall - 1.0;
 }
 
 void BlackScholes::calcGamma(double *gammaCall, double *gammaPut)
 {
-    double d1 = 0.0;
-    d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
-
     *gammaCall = exp(-d1*d1*0.5)/(S0*sigma*sqrt(T)*SQRT2PI);
     *gammaPut = *gammaCall;
 }
 
 void BlackScholes::calcVega(double *vegaCall, double *vegaPut)
 {
-    double d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
     *vegaCall = S0*sqrt(T)*exp(-d1*d1*0.5)/SQRT2PI;
     *vegaPut = *vegaCall;
 }
 
 void BlackScholes::calcTheta( double *thetaCall, double *thetaPut)
 {
-    double d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
-    double d2 = d1 - sigma*sqrt(T);
     *thetaCall = -S0*sigma*exp(-d1*d1*0.5)/(SQRT2PI*2.0*sqrt(T)) - r*K*exp(-r*T)*NCDF(0.0, 1.0, d2);
     *thetaPut = -S0*sigma*exp(-d1*d1*0.5)/(SQRT2PI*2.0*sqrt(T)) + r*K*exp(-r*T)*NCDF(0.0, 1.0, -d2);
 }
