@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include "European.hpp"
 #include "American.hpp"
 #include "BlackScholes.hpp"
+#include "Binomial.hpp"
 
 using namespace std;
 
@@ -56,8 +57,22 @@ int main(int argc, char **argv)
     newPDF->setDrift(exp(r/3.6e4) - 1.0);
     double sigma = newPDF->getStandardDev();
 
-    double i = 0.1;
     double S0 = 100.0;
+    Binomial trial(S0, 100.0, sigma, r/3.6e4, 65.0, 1000);
+    double price = 0.0;
+    trial.calcPrice(&price);
+    std::cout << price << std::endl;
+    /*
+    for(int i = 10; i < 1000; i+=20)
+    {
+	double price = 0.0;
+	trial.setN(i);
+	trial.calcPrice(&price);
+	std::cout << i << "\t" << price << std::endl;
+    }
+    */
+    /*
+    double i = 0.1;
     double T = 65.0;
     BlackScholes bs(S0, 100.0, sigma, r/3.6e4, 65.0);
     while( T > 0.0 )
@@ -84,7 +99,7 @@ int main(int argc, char **argv)
 	T -= 1.0;
 	bs.setT(T);
     }
-
+    */
     delete newPDF;
     return 0;
 }
