@@ -29,14 +29,15 @@ THE SOFTWARE.
 #include <math.h>
 
 #define SQRT2 1.4142135623730950488
+#define SQRT2PI 2.50662827463100050242
 
 class BlackScholes
 {
     private:
-	double underlying;
-	double strike;
-	double volatility;
-	double riskless;
+	double S0;
+	double K;
+	double sigma;
+	double r;
 	double T;
 
     public:
@@ -44,10 +45,22 @@ class BlackScholes
 	    double _strike,
 	    double _volatility,
 	    double _riskless,
-	    double _T);
+	    double _T );
 	~BlackScholes() {};
-	void evaluate(double *call, double *put);
 
+	void setS0(double _S0){ S0 = _S0; };
+	void setK(double _K){ K = _K; };
+	void setSigma(double _sigma){ sigma = _sigma; }
+	
+	void calcPrice(double *call, double *put);
+	void calcIVCall(double callPrice, double *callIV);
+	void calcIVPut(double putPrice, double *putIV);
+
+	void calcDelta(double *deltaCall, double *deltaPut);
+	void calcGamma(double *gammaCall, double *gammaPut);
+	void calcVega(double *vegaCall, double *vegaPut);
+	void calcTheta(double *thetaCall, double *thetaPut);
+	void calcRho(double *rhoCall, double *rhoPut);
 };
 
 #endif

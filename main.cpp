@@ -55,25 +55,27 @@ int main(int argc, char **argv)
     newPDF->generatePDF(&values);
     newPDF->setDrift(exp(r/3.6e4) - 1.0);
     double sigma = newPDF->getStandardDev();
-    Generic_PDF *p = newPDF;
-    TimeSeries *newSeries = new TimeSeries(65, 10000, 100.0, p);
-    EuropeanOption euro(r, 100.0, 100.0, 50);
-    AmericanOption american(r, 100.0, 100.0, 50);
-    BlackScholes bs(100.0, 100.0, sigma, r/3.6e4, 65.0);
-    euro.setWalk( newSeries );
-    euro.evaluate();
-    american.setWalk( newSeries );
-    american.evaluate();
-    double bsCall = 0.0, bsPut = 0.0;
-    bs.evaluate(&bsCall, &bsPut);
-    
-    NIT_PDF *euroPut = euro.getPutPriceDist();
-    cout << "Euro put: " << euroPut->getAverage() << endl;
-    NIT_PDF *americanPut = american.getPutPriceDist();
-    cout << "American put: " << americanPut->getAverage() << endl;
-    cout << "Black-Scholes put: " << bsPut << ", and call: " << bsCall << endl;
 
-    delete newSeries;
+    double i = 0.1;
+    double S0 = 100.0;
+    BlackScholes bs(S0, 100.0, sigma, r/3.6e4, 65.0);
+    while( i <= 2.0 )
+    {
+	bs.setS0(S0*i);	
+	double a = 0.0, b = 0.0;
+
+	std::cout << S0*i << "\t";
+	bs.calcDelta(&a, &b);
+	std::cout << a << "\t";
+	bs.calcGamma(&a, &b);
+	std::cout << a << "\t";
+	bs.calcVega(&a, &b);
+	std::cout << a << "\n";
+
+	i += 0.0005;
+
+    }
+
     delete newPDF;
     return 0;
 }

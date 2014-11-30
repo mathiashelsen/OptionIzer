@@ -35,20 +35,70 @@ BlackScholes::BlackScholes(double _underlying,
 	    double _riskless,
 	    double _T)
 {
-    underlying = _underlying;
-    strike = _strike;
-    volatility = _volatility;
-    riskless = _riskless;
+    S0 = _underlying;
+    K = _strike;
+    sigma = _volatility;
+    r = _riskless;
     T = _T;
 }
 
-void BlackScholes::evaluate(double *call, double *put)
+void BlackScholes::calcPrice(double *call, double *put)
 {
     double d1 = 0.0;
     double d2 = 0.0;
-    d1 = (log(underlying/strike) + (riskless + 0.5*volatility*volatility)*T)/(volatility*sqrt(T));
-    d2 = d1 - volatility*sqrt(T);
+    d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+    d2 = d1 - sigma*sqrt(T);
 
-    *call = NCDF(0.0, 1.0, d1)*underlying - NCDF(0.0, 1.0, d2)*strike*exp(-T*riskless);
-    *put = strike*exp(-T*riskless) - underlying + *call;
+    *call = NCDF(0.0, 1.0, d1)*S0 - NCDF(0.0, 1.0, d2)*K*exp(-T*r);
+    *put = K*exp(-T*r) - S0 + *call;
+}
+
+void BlackScholes::calcIVCall(double callPrice, double *callIV)
+{
+    //sigma = 0.2;
+    double sigmaErr = 1.0;
+    double fn, dfn;
+    double d1 = 0.0;
+    double d2 = 0.0;
+    while(fabs(sigmaErr) > 1.0e-6)
+    {	
+	d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+	d2 = d1 - sigma*sqrt(T);
+	fn = NCDF(0.0, 1.0, d1)*S0 - NCDF(0.0, 1.0, d2)*K*exp(-T*r) - callPrice;	
+	dfn = S0*sqrt(T)*exp(-d1*d1*0.5)/SQRT2PI;
+	sigmaErr = fn/dfn;
+	sigma += -sigmaErr;
+    }
+    std::cout << std::endl;
+    *callIV = sigma;
+}
+
+void BlackScholes::calcDelta(double *deltaCall, double *deltaPut)
+{
+    double d1 = 0.0;
+    d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+
+    *deltaCall = NCDF(0.0, 1.0, d1);
+    *deltaPut = *deltaCall - 1.0;
+}
+
+void BlackScholes::calcGamma(double *gammaCall, double *gammaPut)
+{
+    double d1 = 0.0;
+    d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+
+    *gammaCall = exp(-d1*d1*0.5)/(S0*sigma*sqrt(T)*SQRT2PI);
+    *gammaPut = *gammaCall;
+}
+
+void BlackScholes::calcVega(double *vegaCall, double *vegaPut)
+{
+    double d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+    *vegaCall = S0*sqrt(T)*exp(-d1*d1*0.5)/SQRT2PI;
+    *vegaPut = *vegaCall;
+}
+
+void BlackScholes::calcTheta( double *thetaCall, double *thetaPut)
+{
+
 }
