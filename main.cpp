@@ -56,13 +56,9 @@ int main(int argc, char **argv)
     newPDF->generatePDF(&values);
     newPDF->setDrift(exp(r/3.6e4) - 1.0);
     double sigma = newPDF->getStandardDev();
+    double T = 250.0;
 
     double S0 = 100.0;
-    Binomial trial(S0, 100.0, sigma, r/3.6e4, 65.0, 1000);
-    double price = 0.0;
-    trial.evaluate();
-    trial.calcPrice(&price);
-    std::cout << price << std::endl;
     /*
     for(int i = 10; i < 1000; i+=20)
     {
@@ -72,35 +68,42 @@ int main(int argc, char **argv)
 	std::cout << i << "\t" << price << std::endl;
     }
     */
-    /*
     double i = 0.1;
-    double T = 65.0;
-    BlackScholes bs(S0, 100.0, sigma, r/3.6e4, 65.0);
-    while( T > 0.0 )
+    BlackScholes bs(S0, 100.0, sigma, r/3.6e4, T);
+    Binomial trial(S0, 100.0, sigma, r/3.6e4, T, 1000);
+    while( i <= 2.0 )
     {
-	i = 0.1;
-	while( i <= 2.0 )
-	{
 	bs.setS0(S0*i);	
+	trial.setS0(S0*i);
+	trial.evaluate();
 	double a = 0.0, b = 0.0;
 
-	std::cout << T << "\t" << S0*i << "\t";
+	std::cout << S0*i << "\t";
+
+	bs.calcPrice(&a, &b);
+	std::cout << b << "\t";
 	bs.calcDelta(&a, &b);
-	std::cout << a << "\t";
+	std::cout << b << "\t";
 	bs.calcGamma(&a, &b);
-	std::cout << a << "\t";
-	bs.calcVega(&a, &b);
-	std::cout << a << "\t";
+	std::cout << b << "\t";
 	bs.calcTheta(&a, &b);
+	std::cout << b << "\t";
+	bs.calcVega(&a, &b);
+	std::cout << b << "\t";
+
+	trial.calcPrice(&a);
+	std::cout << a << "\t";
+	trial.calcDelta(&a);
+	std::cout << a << "\t";
+	trial.calcGamma(&a);
+	std::cout << a << "\t";
+	trial.calcTheta(&a);
+	std::cout << a << "\t";
+	trial.calcVega(&a);
 	std::cout << a << "\n";
 
-	i += 0.005;
-	}
-	std::cout << "\n";
-	T -= 1.0;
-	bs.setT(T);
+	i += 0.01;
     }
-    */
     delete newPDF;
     return 0;
 }

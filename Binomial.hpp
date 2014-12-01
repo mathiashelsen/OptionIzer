@@ -62,7 +62,11 @@ class Binomial
 
 	void evaluate();	
 	void calcPrice(double *put);
-
+	void calcDelta(double *deltaPut) { *deltaPut = delta; };
+	void calcGamma(double *gammaPut) { *gammaPut = gamma; };
+	void calcVega(double *vegaPut) { *vegaPut = vega ; };
+	void calcTheta(double *thetaPut) { *thetaPut = theta; };
+	void calcRho(double *rhoPut) { *rhoPut = rho; };
 };
 
 #endif
