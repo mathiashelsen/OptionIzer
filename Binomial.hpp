@@ -42,6 +42,7 @@ class Binomial
 	double dt;
 
 	double u, d, p;
+	double price, delta, gamma, vega, rho, theta;
 	void recalc(void);
 
     public:
@@ -58,7 +59,8 @@ class Binomial
 	void setSigma(double _sigma){ sigma = _sigma; recalc(); };
 	void setT(double _T){ T = _T; recalc(); };
 	void setN(int _N){ N = _N; recalc(); };
-	
+
+	void evaluate();	
 	void calcPrice(double *put);
 
 };

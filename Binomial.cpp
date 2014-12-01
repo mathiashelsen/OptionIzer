@@ -20,7 +20,7 @@ Binomial::Binomial(double _underlying,
     p = (exp(r*dt) - d)/(u - d);
 }
 
-void Binomial::calcPrice(double *put)
+void Binomial::evaluate()
 {
     // Start with the construction of the binomial tree
     double **assetValues = new double*[N];
@@ -53,7 +53,6 @@ void Binomial::calcPrice(double *put)
     {
 	optionValues[N-1][j] = std::max(K - assetValues[N-1][j], 0.0 );	
     }
-    delete[] assetValues[N-1];
 
     for(int i = (N-2); i >= 0; i--)
     {
@@ -66,15 +65,23 @@ void Binomial::calcPrice(double *put)
 	    continuation *= exp(-dt*r);
 	    optionValues[i][j] = std::max(intrinsic, continuation);
 	}
+    }
+
+    price = optionValues[0][0];
+    delta = (optionValues[1][0] - optionValues[1][1])/(assetValues[1][0]-assetValues[1][1]);
+    gamma = (optionValues[2][0] + optionValues[2][2] - 2.0*optionValues[2][0]);
 	// Clean up some crap
 	delete[] assetValues[i];
 	delete[] optionValues[i+1];
-    }
-
-    *put = optionValues[0][0];
     delete[] optionValues[0];
     delete[] assetValues;
     delete[] optionValues;
+
+}
+
+void Binomial::calcPrice(double *put)
+{
+    *put = price;
 }
 
 void Binomial::recalc(void)

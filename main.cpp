@@ -60,6 +60,7 @@ int main(int argc, char **argv)
     double S0 = 100.0;
     Binomial trial(S0, 100.0, sigma, r/3.6e4, 65.0, 1000);
     double price = 0.0;
+    trial.evaluate();
     trial.calcPrice(&price);
     std::cout << price << std::endl;
     /*
