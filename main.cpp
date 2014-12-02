@@ -52,13 +52,13 @@ int main(int argc, char **argv)
     readFile( &inputFile, &values );
 
     double r = 3.0;
+    double T = 250.0;
+    double S0 = 100.0;
     NIT_PDF *newPDF = new NIT_PDF(200);
     newPDF->generatePDF(&values);
     newPDF->setDrift(exp(r/3.6e4) - 1.0);
+    TimeSeries series(250, 1000, S0, (Generic_PDF *)newPDF);
     double sigma = newPDF->getStandardDev();
-    double T = 250.0;
-
-    double S0 = 100.0;
     /*
     for(int i = 10; i < 1000; i+=20)
     {
@@ -71,39 +71,22 @@ int main(int argc, char **argv)
     double i = 0.1;
     BlackScholes bs(S0, 100.0, sigma, r/3.6e4, T);
     Binomial trial(S0, 100.0, sigma, r/3.6e4, T, 1000);
-    while( i <= 2.0 )
-    {
-	bs.setS0(S0*i);	
-	trial.setS0(S0*i);
-	trial.evaluate();
-	double a = 0.0, b = 0.0;
+    AmericanOption mc(r/3.6e4, S0, 100.0, 100);
+    mc.setWalk(&series);
+    mc.evaluate();
+    NIT_PDF *putDist = mc.getPutPriceDist();
 
-	std::cout << S0*i << "\t";
 
-	bs.calcPrice(&a, &b);
-	std::cout << b << "\t";
-	bs.calcDelta(&a, &b);
-	std::cout << b << "\t";
-	bs.calcGamma(&a, &b);
-	std::cout << b << "\t";
-	bs.calcTheta(&a, &b);
-	std::cout << b << "\t";
-	bs.calcVega(&a, &b);
-	std::cout << b << "\t";
+    double a,b;
+    bs.calcPrice(&a, &b);
+    std::cout << b << "\t";
 
-	trial.calcPrice(&a);
-	std::cout << a << "\t";
-	trial.calcDelta(&a);
-	std::cout << a << "\t";
-	trial.calcGamma(&a);
-	std::cout << a << "\t";
-	trial.calcTheta(&a);
-	std::cout << a << "\t";
-	trial.calcVega(&a);
-	std::cout << a << "\n";
+    trial.evaluate();
+    trial.calcPrice(&a);
+    std::cout << a << "\t";
 
-	i += 0.01;
-    }
+    std::cout << putDist->getAverage() << std::endl;
+
     delete newPDF;
     return 0;
 }
