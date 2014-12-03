@@ -39,6 +39,7 @@ THE SOFTWARE.
 #include "American.hpp"
 #include "BlackScholes.hpp"
 #include "Binomial.hpp"
+#include "FiniteDiff.hpp"
 
 using namespace std;
 
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
     double i = 0.1;
     BlackScholes bs(S0, 100.0, sigma, r/3.6e4, T);
     Binomial trial(S0, 100.0, sigma, r/3.6e4, T, 1000);
+    FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, 100, 100);
     AmericanOption mc(r/3.6e4, S0, 100.0, 100);
     mc.setWalk(&series);
     mc.evaluate();
@@ -86,6 +88,8 @@ int main(int argc, char **argv)
     std::cout << a << "\t";
 
     std::cout << putDist->getAverage() << std::endl;
+
+    trial2.evaluate();
 
     delete newPDF;
     return 0;

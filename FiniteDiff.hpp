@@ -29,6 +29,9 @@ THE SOFTWARE.
 #include <math.h>
 #include <algorithm>
 
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_linalg.h>
+
 class FiniteDiff
 {
     private:
@@ -45,6 +48,7 @@ class FiniteDiff
 	int Ns;
 	int Nt;
 
+	double price;
     public:
 	FiniteDiff(
 	    double _S0,
