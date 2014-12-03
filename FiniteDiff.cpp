@@ -15,7 +15,7 @@ FiniteDiff::FiniteDiff(
     sigma = _sigma;
     r = _r;
     T = _T;
-    Smax = _Smax
+    Smax = _Smax;
     Ns = _Ns;
     Nt = _Nt;
 
@@ -46,8 +46,8 @@ void FiniteDiff::evaluate()
     // Now we work backwards in time, starting at second to last point
     for(int i = Nt-2; i >= 0; i++)
     {
-	f[i][0] = K;
-	f[i][N-1] = 0.0;
+	f[0] = K;
+	f[N-1] = 0.0;
 
 	A[0][0] = 1.0;
 	A[N-1][N-1] = 1.0;

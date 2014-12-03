@@ -56,7 +56,7 @@ class FiniteDiff
 	    int Ns,
 	    int Nt);
 
-	~FiniteDiff() = { ; };
-
 	void evaluate();
 };
+
+#endif
