@@ -62,19 +62,20 @@ int main(int argc, char **argv)
     */
 
     int i = 1000;
-    S0 = 0.0;
-    while(S0 < 200.0)
+    S0 = 30.0;
+    while(S0 < 201.0)
     {
-	std::cout << S0 << "\t";
+	i = 1;
 	Binomial trial(S0, 100.0, sigma, r/3.6e4, T, i);
-	FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
-	BlackScholes anal(S0, 100.0, sigma, r/3.6e4, T);
-
         double a, b;
 	// Calculate the binomial tree value
 	trial.evaluate();
 	trial.calcPrice(&a);
-	std::cout << a << "\t";
+	std::cout << a << "\n";
+	/*
+	FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
+	BlackScholes anal(S0, 100.0, sigma, r/3.6e4, T);
+
 
 	trial2.evaluate();
 	trial2.calcPrice(&a);
@@ -82,7 +83,8 @@ int main(int argc, char **argv)
 
 	anal.calcPrice(&a, &b);
 	std::cout << b << "\t" << a << std::endl;
-	S0 += 1.0;
+	*/
+	S0 += 1000.0;
     }
 
     return 0;
