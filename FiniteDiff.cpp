@@ -58,6 +58,9 @@ void FiniteDiff::evaluate()
     // Now we work backwards in time, starting at second to last point
     for(int i = Nt-1; i >= 0; i--)
     {
+	gsl_vector_set(g, 0, K);
+	gsl_vector_set(g, N-1, 0.0);
+
 	gsl_vector_set(f, 0, K);
 	gsl_vector_set(f, N-1, 0.0);
 
@@ -65,11 +68,15 @@ void FiniteDiff::evaluate()
 	gsl_linalg_solve_tridiag(diag, super, sub, g, f);
 
 	// Check for early exercise
+	/*
 	for(int j = 1; j < N-1; j++)
 	{
 	    double S = S0*exp(dZ*(double)(j-N/2));
-	    gsl_vector_set(f, j, std::max(gsl_vector_get(f, j), K - S));
+	    double continuation = gsl_vector_get(f, j);
+	    double exercise = std::max(K-S, 0.0);
+	    gsl_vector_set(f, j, std::max(continuation, exercise));
 	}
+	*/
 
 	// Swap the vectors and iterate
 	tmp = f;
