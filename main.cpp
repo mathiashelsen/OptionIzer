@@ -47,19 +47,10 @@ void readFile(ifstream *file, vector<double> *data);
 
 int main(int argc, char **argv)
 {
-    ifstream inputFile( argv[1] );
-    vector<double> values;
-
-    readFile( &inputFile, &values );
-
     double r = 3.0;
     double T = 250.0;
     double S0 = 100.0;
-    NIT_PDF *newPDF = new NIT_PDF(200);
-    newPDF->generatePDF(&values);
-    newPDF->setDrift(exp(r/3.6e4) - 1.0);
-    TimeSeries series(250, 1000, S0, (Generic_PDF *)newPDF);
-    double sigma = newPDF->getStandardDev();
+    double sigma = 0.01;
     /*
     for(int i = 10; i < 1000; i+=20)
     {
@@ -70,13 +61,16 @@ int main(int argc, char **argv)
     }
     */
 
-    for(int i = 1000; i < 10000; i += 20000000)
+    int i = 1000;
+    S0 = 0.0;
+    while(S0 < 200.0)
     {
-	std::cout << i << "\t";
+	std::cout << S0 << "\t";
 	Binomial trial(S0, 100.0, sigma, r/3.6e4, T, i);
 	FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
+	BlackScholes anal(S0, 100.0, sigma, r/3.6e4, T);
 
-        double a;
+        double a, b;
 	// Calculate the binomial tree value
 	trial.evaluate();
 	trial.calcPrice(&a);
@@ -84,10 +78,13 @@ int main(int argc, char **argv)
 
 	trial2.evaluate();
 	trial2.calcPrice(&a);
-	std::cout << a << std::endl;
+	std::cout << a << "\t";
+
+	anal.calcPrice(&a, &b);
+	std::cout << b << "\t" << a << std::endl;
+	S0 += 1.0;
     }
 
-    delete newPDF;
     return 0;
 }
 

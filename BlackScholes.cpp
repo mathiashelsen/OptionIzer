@@ -40,6 +40,9 @@ BlackScholes::BlackScholes(double _underlying,
     sigma = _volatility;
     r = _riskless;
     T = _T;
+
+    d1 = (log(S0/K) + (r + 0.5*sigma*sigma)*T)/(sigma*sqrt(T));
+    d2 = d1 - sigma*sqrt(T);
 }
 
 void BlackScholes::recalcd()

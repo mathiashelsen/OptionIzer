@@ -56,7 +56,7 @@ void FiniteDiff::evaluate()
     }
 
     // Now we work backwards in time, starting at second to last point
-    for(int i = Nt-2; i >= 0; i--)
+    for(int i = Nt-1; i >= 0; i--)
     {
 	gsl_vector_set(f, 0, K);
 	gsl_vector_set(f, N-1, 0.0);
@@ -76,7 +76,6 @@ void FiniteDiff::evaluate()
 	f = g;
 	g = tmp;
     }
-    std::cout << std::endl;
  
     price = gsl_vector_get(g, N/2);
     gsl_vector_free(diag); gsl_vector_free(super); gsl_vector_free(sub); 
