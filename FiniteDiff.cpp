@@ -7,7 +7,7 @@ FiniteDiff::FiniteDiff(
 	    double _r,
 	    double _T,
 	    double _Smax,
-	    int _Ns,
+	    int _Nz,
 	    int _Nt)
 {
     S0 = _S0;
@@ -15,18 +15,16 @@ FiniteDiff::FiniteDiff(
     sigma = _sigma;
     r = _r;
     T = _T;
-    Smax = _Smax;
-    Ns = _Ns;
+    Nz = _Nz;
     Nt = _Nt;
 
-    dS = S0/(double)Ns;
     dt = T/(double)Nt;
+    dZ = sigma*sqrt(3.0*dt);
 }
 
 void FiniteDiff::evaluate()
 {
-    int N = (int)(Smax/dS);
-    std::cout << N << std::endl;
+    int N = Nz;
     gsl_vector *f = gsl_vector_calloc(N);
     gsl_vector *g = gsl_vector_calloc(N);
     gsl_vector *diag = gsl_vector_calloc(N);
@@ -35,27 +33,33 @@ void FiniteDiff::evaluate()
 
     gsl_vector *tmp = NULL;
 
+
     // At the endpoint in time, each option is worth its intrinsic value
     for(int i = 0; i < N; i++)
     {
-	gsl_vector_set(g, i, std::max(K - dS*(double)i, 0.0));
+	double S = S0*exp(dZ*(double)(i-N/2));
+	gsl_vector_set(g, i, std::max(K - S, 0.0));
     }
 
+    // Prepare the vectors of the linear equation (tridiag system)
+    gsl_vector_set(diag, 0, 1.0);
+    gsl_vector_set(diag, N-1, 1.0);
     double sigmasqrd = sigma*sigma;
+    for(int j = 1; j < N-1; j++)
+    {
+	double beta = 1.0 + dt*sigmasqrd/(dZ*dZ) + r*dt;
+	double alpha = 0.5*dt*(r - sigmasqrd*0.5)/dZ - 0.5*dt*sigmasqrd/(dZ*dZ);
+	double gamma = -0.5*dt*(r - sigmasqrd*0.5)/dZ - 0.5*dt*sigmasqrd/(dZ*dZ);
+	gsl_vector_set(diag, j, beta);
+	gsl_vector_set(super, j, gamma);
+	gsl_vector_set(sub, j-1, alpha);
+    }
+
     // Now we work backwards in time, starting at second to last point
     for(int i = Nt-2; i >= 0; i--)
     {
 	gsl_vector_set(f, 0, K);
 	gsl_vector_set(f, N-1, 0.0);
-
-	gsl_vector_set(diag, 0, 1.0);
-	gsl_vector_set(diag, N-1, 1.0);
-	for(int j = 1; j < N-1; j++)
-	{
-	    gsl_vector_set(diag, j, 1.0 + sigmasqrd*(double)j*(double)j*dt + r*dt);
-	    gsl_vector_set(super, j, -0.5*(r + sigmasqrd*(double)j)*dt*(double)j);
-	    gsl_vector_set(sub, j-1, 0.5*(r - sigmasqrd*(double)j)*dt*(double)j);
-	}
 
 	// Solve the equations
 	gsl_linalg_solve_tridiag(diag, super, sub, g, f);
@@ -63,7 +67,8 @@ void FiniteDiff::evaluate()
 	// Check for early exercise
 	for(int j = 1; j < N-1; j++)
 	{
-	    gsl_vector_set(f, j, std::max(gsl_vector_get(f, j), K - dS*(double)j));
+	    double S = S0*exp(dZ*(double)(j-N/2));
+	    gsl_vector_set(f, j, std::max(gsl_vector_get(f, j), K - S));
 	}
 
 	// Swap the vectors and iterate
@@ -71,10 +76,9 @@ void FiniteDiff::evaluate()
 	f = g;
 	g = tmp;
     }
+    std::cout << std::endl;
  
-    std::cout << Ns << std::endl; 
-    price = gsl_vector_get(g, Ns);
-    std::cout << price << "\n";
+    price = gsl_vector_get(g, N/2);
     gsl_vector_free(diag); gsl_vector_free(super); gsl_vector_free(sub); 
     gsl_vector_free(f); gsl_vector_free(g);
 }

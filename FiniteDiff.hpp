@@ -43,9 +43,9 @@ class FiniteDiff
 
 	double Smax;
 	double dt;
-	double dS;
+	double dZ;
 
-	int Ns;
+	int Nz;
 	int Nt;
 
 	double price;
@@ -61,6 +61,7 @@ class FiniteDiff
 	    int Nt);
 
 	void evaluate();
+	void calcPrice( double *putPrice ) { *putPrice = price; };
 };
 
 #endif

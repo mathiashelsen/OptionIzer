@@ -69,27 +69,23 @@ int main(int argc, char **argv)
 	std::cout << i << "\t" << price << std::endl;
     }
     */
-    double i = 0.1;
-    BlackScholes bs(S0, 100.0, sigma, r/3.6e4, T);
-    Binomial trial(S0, 100.0, sigma, r/3.6e4, T, 1000);
-    FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, 100, 100);
-    AmericanOption mc(r/3.6e4, S0, 100.0, 100);
-    mc.setWalk(&series);
-    mc.evaluate();
-    NIT_PDF *putDist = mc.getPutPriceDist();
 
+    for(int i = 1000; i < 10000; i += 20000000)
+    {
+	std::cout << i << "\t";
+	Binomial trial(S0, 100.0, sigma, r/3.6e4, T, i);
+	FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
 
-    double a,b;
-    bs.calcPrice(&a, &b);
-    std::cout << b << "\t";
+        double a;
+	// Calculate the binomial tree value
+	trial.evaluate();
+	trial.calcPrice(&a);
+	std::cout << a << "\t";
 
-    trial.evaluate();
-    trial.calcPrice(&a);
-    std::cout << a << "\t";
-
-    std::cout << putDist->getAverage() << std::endl;
-
-    trial2.evaluate();
+	trial2.evaluate();
+	trial2.calcPrice(&a);
+	std::cout << a << std::endl;
+    }
 
     delete newPDF;
     return 0;
