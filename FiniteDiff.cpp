@@ -68,7 +68,6 @@ void FiniteDiff::evaluate()
 	gsl_linalg_solve_tridiag(diag, super, sub, g, f);
 
 	// Check for early exercise
-	/*
 	for(int j = 1; j < N-1; j++)
 	{
 	    double S = S0*exp(dZ*(double)(j-N/2));
@@ -76,7 +75,6 @@ void FiniteDiff::evaluate()
 	    double exercise = std::max(K-S, 0.0);
 	    gsl_vector_set(f, j, std::max(continuation, exercise));
 	}
-	*/
 
 	// Swap the vectors and iterate
 	tmp = f;
