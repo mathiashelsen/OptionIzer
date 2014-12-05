@@ -49,6 +49,7 @@ class FiniteDiff
 	int Nt;
 
 	double price;
+	double delta, gamma, theta;
     public:
 	FiniteDiff(
 	    double _S0,
@@ -62,6 +63,8 @@ class FiniteDiff
 
 	void evaluate();
 	void calcPrice( double *putPrice ) { *putPrice = price; };
+	void calcDelta( double *putDelta ) { *putDelta = delta; };
+	void calcGamma( double *putGamma) { *putGamma = gamma; };
 };
 
 #endif

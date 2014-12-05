@@ -56,6 +56,7 @@ void FiniteDiff::evaluate()
     }
 
     // Now we work backwards in time, starting at second to last point
+    double delta1, delta2;
     for(int i = Nt-1; i >= 0; i--)
     {
 	gsl_vector_set(g, 0, K);
@@ -68,6 +69,7 @@ void FiniteDiff::evaluate()
 	gsl_linalg_solve_tridiag(diag, super, sub, g, f);
 
 	// Check for early exercise
+	/*
 	for(int j = 1; j < N-1; j++)
 	{
 	    double S = S0*exp(dZ*(double)(j-N/2));
@@ -75,14 +77,26 @@ void FiniteDiff::evaluate()
 	    double exercise = std::max(K-S, 0.0);
 	    gsl_vector_set(f, j, std::max(continuation, exercise));
 	}
+	*/
 
 	// Swap the vectors and iterate
 	tmp = f;
 	f = g;
 	g = tmp;
+
+	delta1 = gsl_vector_get(g, N/2) - gsl_vector_get(g, N/2 - 1);
+	delta1 /= S0*(1.0 - exp(-dZ));
+
+	delta2 = gsl_vector_get(g, N/2) - gsl_vector_get(g, N/2 + 1);
+	delta2 /= S0*(1.0 - exp(dZ));
     }
  
     price = gsl_vector_get(g, N/2);
+    delta = gsl_vector_get(g, N/2) - gsl_vector_get(g, N/2 - 1);
+    delta /= S0*(1.0 - exp(-dZ));
+    gamma = (delta1 - delta2)/(S0*(exp(-dZ) - exp(dZ)));
+
+
     gsl_vector_free(diag); gsl_vector_free(super); gsl_vector_free(sub); 
     gsl_vector_free(f); gsl_vector_free(g);
 }

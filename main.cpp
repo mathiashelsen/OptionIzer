@@ -67,23 +67,34 @@ int main(int argc, char **argv)
     {
 	std::cout << S0 << "\t";
 	i = 1000;
-	Binomial trial(S0, 100.0, sigma, r/3.6e4, T, i);
+	Binomial bin(S0, 100.0, sigma, r/3.6e4, T, i);
+	FiniteDiff findif(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
+	BlackScholes bs(S0, 100.0, sigma, r/3.6e4, T);
+
         double a, b;
 	// Calculate the binomial tree value
-	trial.evaluate();
-	trial.calcPrice(&a);
+	bin.evaluate();
+	bin.calcPrice(&a);
+	std::cout << a << "\t";
+	bin.calcDelta(&a);
+	std::cout << a << "\t";
+	bin.calcGamma(&a);
 	std::cout << a << "\t";
 	
-	FiniteDiff trial2(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
-	BlackScholes anal(S0, 100.0, sigma, r/3.6e4, T);
-
-
-	trial2.evaluate();
-	trial2.calcPrice(&a);
+	findif.evaluate();
+	findif.calcPrice(&a);
+	std::cout << a << "\t";
+	findif.calcDelta(&a);
+	std::cout << a << "\t";
+	findif.calcGamma(&a);
 	std::cout << a << "\t";
 
-	anal.calcPrice(&a, &b);
-	std::cout << b << "\t" << a << std::endl;
+	bs.calcPrice(&a, &b);
+	std::cout << b << "\t";
+	bs.calcDelta(&a, &b);
+	std::cout << b << "\t";
+	bs.calcGamma(&a, &b);
+	std::cout << b << "\n";
 	
 	S0 += 1.0;
     }

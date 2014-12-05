@@ -66,24 +66,22 @@ void Binomial::evaluate()
 	    // The value obtained by waiting to exercise
 	    double continuation = p*optionValues[i+1][j] + (1.0 - p)*optionValues[i+1][j+1];
 	    continuation *= exp(-dt*r);
-	    optionValues[i][j] = std::max(intrinsic, continuation);
-	    //optionValues[i][j] = continuation;
+	    //optionValues[i][j] = std::max(intrinsic, continuation);
+	    optionValues[i][j] = continuation;
 	}
     }
 
     price = p*optionValues[1][0] + (1.0 - p)*optionValues[1][1];
     price *= exp(-dt*r);
-   // std::cout << price << std::endl;
-    //delta = (optionValues[1][0] - optionValues[1][1])/(assetValues[1][0]-assetValues[1][1]);
+    delta = (optionValues[1][0] - optionValues[1][1])/(assetValues[1][0]-assetValues[1][1]);
 
-    //double delta1 = (optionValues[2][0] - optionValues[2][1])/(assetValues[2][0]-assetValues[2][1]);
-    /*
+    double delta1 = (optionValues[2][0] - optionValues[2][1])/(assetValues[2][0]-assetValues[2][1]);
     double delta2 = (optionValues[2][1] - optionValues[2][2])/(assetValues[2][1]-assetValues[2][2]);
     double h = 0.5*(assetValues[2][0]-assetValues[2][2]);
     gamma = (delta1 - delta2)/h;
 
     theta = (optionValues[2][1] - optionValues[0][0])/(2.0*dt);
-    */
+    
     // Re-calculate the tree for a different volatility
     /*
     sigma *= 1.01;
