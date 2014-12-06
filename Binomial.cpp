@@ -66,8 +66,8 @@ void Binomial::evaluate()
 	    // The value obtained by waiting to exercise
 	    double continuation = p*optionValues[i+1][j] + (1.0 - p)*optionValues[i+1][j+1];
 	    continuation *= exp(-dt*r);
-	    //optionValues[i][j] = std::max(intrinsic, continuation);
-	    optionValues[i][j] = continuation;
+	    optionValues[i][j] = std::max(intrinsic, continuation);
+	    //optionValues[i][j] = continuation;
 	}
     }
 

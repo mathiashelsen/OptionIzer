@@ -49,9 +49,9 @@ void FiniteDiff::evaluate()
     {
 	double beta = 1.0 + dt*sigmasqrd/(dZ*dZ) + r*dt;
 	double alpha = 0.5*dt*(r - sigmasqrd*0.5)/dZ - 0.5*dt*sigmasqrd/(dZ*dZ);
-	double gamma = -0.5*dt*(r - sigmasqrd*0.5)/dZ - 0.5*dt*sigmasqrd/(dZ*dZ);
+	double gamma2 = -0.5*dt*(r - sigmasqrd*0.5)/dZ - 0.5*dt*sigmasqrd/(dZ*dZ);
 	gsl_vector_set(diag, j, beta);
-	gsl_vector_set(super, j, gamma);
+	gsl_vector_set(super, j, gamma2);
 	gsl_vector_set(sub, j-1, alpha);
     }
 
@@ -69,7 +69,6 @@ void FiniteDiff::evaluate()
 	gsl_linalg_solve_tridiag(diag, super, sub, g, f);
 
 	// Check for early exercise
-	/*
 	for(int j = 1; j < N-1; j++)
 	{
 	    double S = S0*exp(dZ*(double)(j-N/2));
@@ -77,7 +76,6 @@ void FiniteDiff::evaluate()
 	    double exercise = std::max(K-S, 0.0);
 	    gsl_vector_set(f, j, std::max(continuation, exercise));
 	}
-	*/
 
 	// Swap the vectors and iterate
 	tmp = f;
@@ -94,7 +92,7 @@ void FiniteDiff::evaluate()
     price = gsl_vector_get(g, N/2);
     delta = gsl_vector_get(g, N/2) - gsl_vector_get(g, N/2 - 1);
     delta /= S0*(1.0 - exp(-dZ));
-    gamma = (delta1 - delta2)/(S0*(exp(-dZ) - exp(dZ)));
+    gamma = 2.0*(delta1 - delta2)/(S0*(exp(-dZ) - exp(dZ)));
 
 
     gsl_vector_free(diag); gsl_vector_free(super); gsl_vector_free(sub); 

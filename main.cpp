@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     double r = 3.0;
     double T = 250.0;
     double S0 = 100.0;
-    double sigma = 0.01;
+    double sigma = 0.02;
     /*
     for(int i = 10; i < 1000; i+=20)
     {
