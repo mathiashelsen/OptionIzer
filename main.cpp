@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
+/*
 #include "Generic_PDF.hpp"
 #include "NIT_PDF.hpp"
 #include "TimeSeries.hpp"
@@ -40,6 +41,10 @@ THE SOFTWARE.
 #include "BlackScholes.hpp"
 #include "Binomial.hpp"
 #include "FiniteDiff.hpp"
+*/
+
+#include "BinomialSolver.hpp"
+#include "VanillaOption.hpp"
 
 using namespace std;
 
@@ -50,54 +55,12 @@ int main(int argc, char **argv)
     double r = 3.0;
     double T = 250.0;
     double S0 = 100.0;
+    double K = 100.0;
     double sigma = 0.02;
-    /*
-    for(int i = 10; i < 1000; i+=20)
-    {
-	double price = 0.0;
-	trial.setN(i);
-	trial.calcPrice(&price);
-	std::cout << i << "\t" << price << std::endl;
-    }
-    */
 
-    int i = 2;
-    S0 = 30.0;
-    while(S0 < 201.0)
-    {
-	std::cout << S0 << "\t";
-	i = 1000;
-	Binomial bin(S0, 100.0, sigma, r/3.6e4, T, i);
-	FiniteDiff findif(S0, 100.0, sigma, r/3.6e4, T, 300.0, i, i);
-	BlackScholes bs(S0, 100.0, sigma, r/3.6e4, T);
-
-        double a, b;
-	// Calculate the binomial tree value
-	bin.evaluate();
-	bin.calcPrice(&a);
-	std::cout << a << "\t";
-	bin.calcDelta(&a);
-	std::cout << a << "\t";
-	bin.calcGamma(&a);
-	std::cout << a << "\t";
-	
-	findif.evaluate();
-	findif.calcPrice(&a);
-	std::cout << a << "\t";
-	findif.calcDelta(&a);
-	std::cout << a << "\t";
-	findif.calcGamma(&a);
-	std::cout << a << "\t";
-
-	bs.calcPrice(&a, &b);
-	std::cout << b << "\t";
-	bs.calcDelta(&a, &b);
-	std::cout << b << "\t";
-	bs.calcGamma(&a, &b);
-	std::cout << b << "\n";
-	
-	S0 += 1.0;
-    }
+    VanillaOption trialOption(S0, K, sigma, r, T, false);
+    BinomialSolver solver(1000);
+    solver(&trialOption);
 
     return 0;
 }
