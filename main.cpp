@@ -52,7 +52,7 @@ void readFile(ifstream *file, vector<double> *data);
 
 int main(int argc, char **argv)
 {
-    double r = 3.0;
+    double r = 3.0/3.6e4;
     double T = 250.0;
     double S0 = 100.0;
     double K = 100.0;

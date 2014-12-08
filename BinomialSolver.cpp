@@ -56,7 +56,6 @@ void BinomialSolver::operator()(VanillaOption *option)
     for(int j = 0; j < (N+1); j++)
     {
 	optionValues[N][j] = std::max<double>(option->K - assetValues[N][j], 0.0 );	
-	std::cout << optionValues[N][j] << ", ";
     }
 
     for(int i = (N-1); i > 0; i--)
