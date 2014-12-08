@@ -53,14 +53,24 @@ void readFile(ifstream *file, vector<double> *data);
 int main(int argc, char **argv)
 {
     double r = 3.0/3.6e4;
-    double T = 250.0;
-    double S0 = 100.0;
+    double T = 25.0;
+    double S0 = 10.0;
     double K = 100.0;
     double sigma = 0.02;
 
+    double price, delta, gamma, theta;
+
     VanillaOption trialOption(S0, K, sigma, r, T, false);
     BinomialSolver solver(1000);
-    solver(&trialOption);
+    while(S0 < 200.0)
+    {
+	trialOption.setUnderlying(S0); 
+	solver(&trialOption);
+	trialOption.getPrice(&price);
+	trialOption.getGreeks(&delta, &gamma, &theta);
+	std::cout << S0 << "\t" << price << "\t" << delta << "\t" << gamma << std::endl;
+	S0 += 1.0;
+    }
 
     return 0;
 }

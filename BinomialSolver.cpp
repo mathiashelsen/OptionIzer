@@ -78,14 +78,14 @@ void BinomialSolver::operator()(VanillaOption *option)
 	}
     }
 
-    price = p*optionValues[1][0] + (1.0 - p)*optionValues[1][1];
-    price *= exp(-dt*option->r);
-    delta = (optionValues[1][0] - optionValues[1][1])/(assetValues[1][0]-assetValues[1][1]);
+    option->price = p*optionValues[1][0] + (1.0 - p)*optionValues[1][1];
+    option->price *= exp(-dt*option->r);
+    option->delta = (optionValues[1][0] - optionValues[1][1])/(assetValues[1][0]-assetValues[1][1]);
 
     double delta1 = (optionValues[2][0] - optionValues[2][1])/(assetValues[2][0]-assetValues[2][1]);
     double delta2 = (optionValues[2][1] - optionValues[2][2])/(assetValues[2][1]-assetValues[2][2]);
     double h = 0.5*(assetValues[2][0]-assetValues[2][2]);
-    gamma = (delta1 - delta2)/h;
+    option->gamma = (delta1 - delta2)/h;
 
-    theta = (optionValues[2][1] - optionValues[0][0])/(2.0*dt);
+    option->theta = (optionValues[2][1] - optionValues[0][0])/(2.0*dt);
 };

@@ -15,7 +15,6 @@ class BinomialSolver : private Solver<VanillaOption>
 	double **assetValues;
 	double **optionValues;
 
-	double price, delta, gamma, theta;
     public:
 	void operator()(VanillaOption *option);
 	BinomialSolver(int _N);
