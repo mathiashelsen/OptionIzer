@@ -33,6 +33,11 @@ void BinomialSolver::operator()(VanillaOption *option)
     double u = exp(option->sigma*sqrt(dt));
     double d = 1.0/u;
     double p = (exp(option->r*dt) - d)/(u - d);
+    double multiplier = 1.0;
+    if ( ! option->put )
+    {
+	multiplier = -1.0;
+    }
 
     // The root of the tree is the underlying value
     assetValues[0][0] = option->S0;
@@ -55,7 +60,7 @@ void BinomialSolver::operator()(VanillaOption *option)
     // First the payoff for the terminal nodes
     for(int j = 0; j < (N+1); j++)
     {
-	optionValues[N][j] = std::max<double>(option->K - assetValues[N][j], 0.0 );	
+	optionValues[N][j] = std::max<double>(multiplier*(option->K - assetValues[N][j]), 0.0 );	
     }
 
     for(int i = (N-1); i > 0; i--)
@@ -68,7 +73,7 @@ void BinomialSolver::operator()(VanillaOption *option)
 	    if(option->american)
 	    {
 		// The value of exercising the put at this time
-		double intrinsic = std::max(option->K - assetValues[i][j], 0.0);
+		double intrinsic = std::max(multiplier*(option->K - assetValues[i][j]), 0.0);
 		optionValues[i][j] = std::max(intrinsic, continuation);
 	    }
 	    else
