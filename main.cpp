@@ -45,6 +45,7 @@ THE SOFTWARE.
 
 #include "BinomialSolver.hpp"
 #include "FiniteDiffSolver.hpp"
+#include "BlackScholesSolver.hpp"
 #include "VanillaOption.hpp"
 
 using namespace std;
@@ -64,17 +65,21 @@ int main(int argc, char **argv)
     VanillaOption trialOption(S0, K, sigma, r, T, false, true);
     BinomialSolver solver(1000);
     FiniteDiffSolver diffSolve(1000, 1000);
+    BlackScholesSolver *bsSolve = new BlackScholesSolver;
     while(S0 < 200.0)
     {
 	trialOption.setUnderlying(S0); 
 	solver(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
-	std::cout << S0 << "\t" << gamma << "\t"; 
+	std::cout << S0 << "\t" << price << "\t"; 
 	diffSolve(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
-	std::cout << gamma << std::endl;
+	std::cout << price << "\t";
+	(*bsSolve)(&trialOption);
+	trialOption.getGreeks(&delta, &gamma, &theta);
+	std::cout << price << std::endl;
 	S0 += 1.0;
     }
 

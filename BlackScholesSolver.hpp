@@ -8,14 +8,15 @@
 #include <math.h>
 #include <algorithm>
 
-static double NCDF(double mu, double sigma, double x)
-{
-    return (1.0 + erf((x-mu)/(sigma*SQRT2)))/2.0;
-}
+#define SQRT2 1.4142135623730950488
+#define SQRT2PI 2.50662827463100050242
 
 class BlackScholesSolver: public Solver<VanillaOption>
 {
-
+    public:
+	void operator()(VanillaOption *option);
+	BlackScholesSolver();
+	~BlackScholesSolver();
 };
 
 #endif

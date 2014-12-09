@@ -7,6 +7,7 @@ class VanillaOption
 {
     friend class BinomialSolver;
     friend class FiniteDiffSolver;
+    friend class BlackScholesSolver;
     protected:
 	// Inputs
 	double S0;
