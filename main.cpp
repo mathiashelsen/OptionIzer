@@ -43,10 +43,10 @@ THE SOFTWARE.
 #include "FiniteDiff.hpp"
 */
 
-#include "BinomialSolver.hpp"
-#include "FiniteDiffSolver.hpp"
-#include "BlackScholesSolver.hpp"
-#include "VanillaOption.hpp"
+#include "Solvers/BinomialSolver.hpp"
+#include "Solvers/FiniteDiffSolver.hpp"
+#include "Solvers/BlackScholesSolver.hpp"
+#include "OptionTypes/VanillaOption.hpp"
 
 using namespace std;
 
