@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 {
     double r = 3.0/3.6e4;
     double T = 250.0;
-    double S0 = 10.0;
+    double S0 = 20.0;
     double K = 100.0;
     double sigma = 0.02;
 
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
     Gaussian_PDF mcmcPDF(r/4.0, sigma/sqrt(4.0));
     MCMCSolver mcmcSolver(&mcmcPDF, 50, 1000, 4*(int)T);
-    while(S0 < 200.0)
+    while(S0 < 120.0)
     {
 	trialOption.setUnderlying(S0); 
 
