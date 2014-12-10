@@ -118,7 +118,7 @@ void MCMCSolver::operator()(VanillaOption *option)
 	discount = exp( -option->r *(double)Nsteps );
 	for(int i = 0; i < Nseries; i++)
 	{
-	    payoffs[j] *= discount;
+	    payoffs[i] *= discount;
 	}
     }
    
@@ -131,7 +131,7 @@ void MCMCSolver::operator()(VanillaOption *option)
     gsl_histogram_set_ranges_uniform(priceHistogram, minPrice, maxPrice);
     for(int i = 0; i < Nseries; i++)
     {
-	gsl_histogram_increment( payoffs[i] );
+	gsl_histogram_increment( priceHistogram, payoffs[i] );
     }
 
     option->price = gsl_histogram_mean( priceHistogram );
