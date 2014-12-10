@@ -32,19 +32,18 @@ static void LSE_estimate(vector<double> *x, vector<double> *y, vector<double> *y
 
 void MCMCSolver::operator()(VanillaOption *option)
 {
-    boost::mt19937 * rng = new boost::mt19937();
-    static boost::uniform_01<boost::mt19937> generator(*rng);
     for(int i = 0; i < Nseries; i++ )
     {
 	assetValues[i][0] = option->S0;
 	for(int j = 1; j < Nsteps; j++)
 	{
-	    assetValues[i][j] = assetValues[i][j-1]*(1.0 + p->drawRandom(generator()));
+	    assetValues[i][j] = assetValues[i][j-1]*(1.0 + p->drawRandom());
 	}
     }
 
     // The risk free discounting rate for each time step (not limited to daily rate)
-    double discount = exp( -option->r );
+    dt = option->T / (double)Nsteps;
+    double discount = exp( -option->r*dt );
 
     vector<double> x;
     vector<double> y;
@@ -115,7 +114,7 @@ void MCMCSolver::operator()(VanillaOption *option)
     }
     else
     {
-	discount = exp( -option->r *(double)Nsteps );
+	discount = exp( -option->r * option->T );
 	for(int i = 0; i < Nseries; i++)
 	{
 	    payoffs[i] *= discount;
@@ -128,13 +127,21 @@ void MCMCSolver::operator()(VanillaOption *option)
 	maxPrice = (maxPrice > payoffs[i]*1.01) ? maxPrice : payoffs[i]*1.01; // Upper bound is exclusive
 	minPrice = (minPrice < payoffs[i]) ? minPrice : payoffs[i];
     }
-    gsl_histogram_set_ranges_uniform(priceHistogram, minPrice, maxPrice);
-    for(int i = 0; i < Nseries; i++)
+    if( minPrice < maxPrice )
     {
-	gsl_histogram_increment( priceHistogram, payoffs[i] );
+	gsl_histogram_reset(priceHistogram);
+	gsl_histogram_set_ranges_uniform(priceHistogram, minPrice, maxPrice);
+	for(int i = 0; i < Nseries; i++)
+	{
+	    gsl_histogram_increment( priceHistogram, payoffs[i] );
+	}
+	option->price = gsl_histogram_mean( priceHistogram );
+    }
+    else
+    {
+	option->price = 0.0;
     }
 
-    option->price = gsl_histogram_mean( priceHistogram );
 }
 
 

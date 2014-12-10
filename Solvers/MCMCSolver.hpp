@@ -24,6 +24,7 @@ class MCMCSolver : public Solver<VanillaOption>
 	int Nbins;
 	int Nseries;
 	int Nsteps;
+	double dt;
 	double **assetValues;
 	double *payoffs;
     public:

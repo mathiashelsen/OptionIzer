@@ -4,7 +4,7 @@ Generic_PDF::~Generic_PDF()
 {
 
 }
-double Generic_PDF::drawRandom(double x)
+double Generic_PDF::drawRandom()
 {
     return 0.0;
 }
