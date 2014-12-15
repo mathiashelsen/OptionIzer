@@ -27,10 +27,12 @@ class MCMCSolver : public Solver<VanillaOption>
 	double dt;
 	double **assetValues;
 	double *payoffs;
+	void performCalculation(VanillaOption *option);
     public:
 	MCMCSolver(Generic_PDF *_p, int _Nbins, int _NSeries, int _Nsteps);
 	~MCMCSolver();
 	void operator()(VanillaOption *option);
+	double errCalculation();
 };
 
 #endif

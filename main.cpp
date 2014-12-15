@@ -65,35 +65,39 @@ int main(int argc, char **argv)
     double price, delta, gamma, theta;
 
 
-    VanillaOption trialOption(S0, K, sigma, r, T, false, true);
+    VanillaOption trialOption(S0, K, sigma, r, T, true, true);
     BinomialSolver solver(1000);
     FiniteDiffSolver diffSolve(1000, 1000);
     BlackScholesSolver *bsSolve = new BlackScholesSolver;
 
-    Gaussian_PDF mcmcPDF(r/4.0, sigma/sqrt(4.0));
-    MCMCSolver mcmcSolver(&mcmcPDF, 50, 1000, 4*(int)T);
+    Gaussian_PDF mcmcPDF(r, sigma/sqrt(1.0));
+    MCMCSolver mcmcSolver(&mcmcPDF, 50, 4000, (int)T);
     while(S0 < 120.0)
     {
 	trialOption.setUnderlying(S0); 
 
 	solver(&trialOption);
 	trialOption.getPrice(&price);
+	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << S0 << "\t" << price << "\t"; 
 
 
 	diffSolve(&trialOption);
 	trialOption.getPrice(&price);
+	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << price << "\t";
 
 
 	(*bsSolve)(&trialOption);
 	trialOption.getPrice(&price);
+	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << price << "\t";
 
 
 	mcmcSolver(&trialOption);
 	trialOption.getPrice(&price);
-	std::cout << price << "\n";
+	trialOption.getGreeks(&delta, &gamma, &theta);
+	std::cout << price << "\t" << mcmcSolver.errCalculation() << std::endl;
 
 
 	S0 += 1.0;

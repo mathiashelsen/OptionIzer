@@ -32,6 +32,28 @@ static void LSE_estimate(vector<double> *x, vector<double> *y, vector<double> *y
 
 void MCMCSolver::operator()(VanillaOption *option)
 {
+    double priceHigh = 0.0, priceLow = 0.0, priceCenter = 0.0;
+    double S0High = option->S0*1.01; 
+    double S0Low = option->S0*0.99;
+    double S0 = option->S0;
+
+/*    option->S0 = S0High;
+    this->performCalculation(option);
+    priceHigh = option->price;
+
+    option->S0 = S0Low;
+    this->performCalculation(option);
+    priceLow = option->price;
+*/
+    option->S0 = S0;
+    this->performCalculation(option);
+    priceCenter = option->price;
+
+    //option->delta = (priceHigh - priceLow)/(S0High - S0Low);
+}
+
+void MCMCSolver::performCalculation(VanillaOption *option)
+{
     for(int i = 0; i < Nseries; i++ )
     {
 	assetValues[i][0] = option->S0;
@@ -86,26 +108,37 @@ void MCMCSolver::operator()(VanillaOption *option)
 	    }
 
 	    // perform LS estimate
-	    LSE_estimate(&x, &y, &estimate);
+	    if( y.size() > 2 )
+		LSE_estimate(&x, &y, &estimate);
 
 
 	    // Check if the estimated value is larger or smaller than the current payoff
 	    int k = 0;
-	    for(int j = 0; j < Nseries; j++)
+	    if( y.size() > 2)
 	    {
-		if( (k < (int)indices.size()) && (indices.at(k) == j) )
+		for(int j = 0; j < Nseries; j++)
 		{
-		    if( max(multiplier*(option->K - assetValues[j][i]), 0.0) > estimate.at(k) )
+		    if( (k < (int)indices.size()) && (indices.at(k) == j) )
 		    {
-			payoffs[j] = max(multiplier*(option->K - assetValues[j][i]), 0.0);
+			if( max(multiplier*(option->K - assetValues[j][i]), 0.0) > estimate.at(k) )
+			{
+			    payoffs[j] = max(multiplier*(option->K - assetValues[j][i]), 0.0);
+			}
+			else
+			{
+			    payoffs[j] *= discount; 
+			}
+			k++;
 		    }
 		    else
 		    {
 			payoffs[j] *= discount; 
 		    }
-		    k++;
 		}
-		else
+	    }
+	    else
+	    {
+		for(int j = 0; j < Nseries; j++)
 		{
 		    payoffs[j] *= discount; 
 		}
@@ -142,6 +175,11 @@ void MCMCSolver::operator()(VanillaOption *option)
 	option->price = 0.0;
     }
 
+}
+
+double MCMCSolver::errCalculation()
+{
+    return gsl_histogram_sigma( priceHistogram )/sqrt((double)Nseries);
 }
 
 
