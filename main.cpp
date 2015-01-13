@@ -65,13 +65,13 @@ int main(int argc, char **argv)
     double price, delta, gamma, theta;
 
 
-    VanillaOption trialOption(S0, K, sigma, r, T, true, true);
+    VanillaOption trialOption(S0, K, sigma, r, T, false, true);
     BinomialSolver solver(1000);
     FiniteDiffSolver diffSolve(1000, 1000);
     BlackScholesSolver *bsSolve = new BlackScholesSolver;
 
     Gaussian_PDF mcmcPDF(r, sigma/sqrt(1.0));
-    MCMCSolver mcmcSolver(&mcmcPDF, 50, 4000, (int)T);
+    MCMCSolver mcmcSolver(&mcmcPDF, 50, 10000, (int)T);
     while(S0 < 120.0)
     {
 	trialOption.setUnderlying(S0); 

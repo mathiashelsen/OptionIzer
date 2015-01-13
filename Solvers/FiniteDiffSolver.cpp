@@ -55,11 +55,22 @@ void FiniteDiffSolver::operator()(VanillaOption *option)
     double delta1 = 0.0, delta2 = 0.0;
     for(int i = Nt-1; i >= 0; i--)
     {
-	gsl_vector_set(g, 0, option->K);
-	gsl_vector_set(g, Nz-1, 0.0);
+	// Boundary conditions vary for put and calls
+	if(option->put){
+	    gsl_vector_set(g, Nz-1, option->K);
+	    gsl_vector_set(g, 0, 0.0);
 
-	gsl_vector_set(f, 0, option->K);
-	gsl_vector_set(f, Nz-1, 0.0);
+	    gsl_vector_set(f, Nz-1, option->K);
+	    gsl_vector_set(f, 0, 0.0);
+	}
+	else
+	{
+	    gsl_vector_set(g, 0, option->K);
+	    gsl_vector_set(g, Nz-1, 0.0);
+
+	    gsl_vector_set(f, 0, option->K);
+	    gsl_vector_set(f, Nz-1, 0.0);
+	}
 
 	// Solve the equations
 	gsl_linalg_solve_tridiag(diag, super, sub, g, f);
