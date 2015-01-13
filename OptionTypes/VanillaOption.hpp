@@ -9,6 +9,8 @@ class VanillaOption
     friend class FiniteDiffSolver;
     friend class BlackScholesSolver;
     friend class MCMCSolver;
+    friend class CUDA_MC_Euro_Solver;
+    
     protected:
 	// Inputs
 	double S0;

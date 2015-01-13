@@ -2,17 +2,18 @@
 #define _MCMCSOLVER_HPP
 
 #include "../OptionTypes/VanillaOption.hpp"
-#include "Solver.hpp"
 #include "../Generic_PDF.hpp"
+#include "Solver.hpp"
 
 #include "../linalg/ap.h"
 #include "../linalg/interpolation.h"
 
-#include <gsl/gsl_histogram.h>
-#include <vector>
-
 #include <boost/random.hpp>
 #include <boost/random/mersenne_twister.hpp>
+
+#include <gsl/gsl_histogram.h>
+
+#include <vector>
 
 using namespace std;
 

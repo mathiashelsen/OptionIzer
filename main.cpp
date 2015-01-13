@@ -32,23 +32,16 @@ THE SOFTWARE.
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-/*
-#include "Generic_PDF.hpp"
-#include "NIT_PDF.hpp"
-#include "TimeSeries.hpp"
-#include "European.hpp"
-#include "American.hpp"
-#include "BlackScholes.hpp"
-#include "Binomial.hpp"
-#include "FiniteDiff.hpp"
-*/
-
 #include "Solvers/BinomialSolver.hpp"
-#include "Solvers/FiniteDiffSolver.hpp"
 #include "Solvers/BlackScholesSolver.hpp"
+#include "Solvers/FiniteDiffSolver.hpp"
+#include "Solvers/CUDA_MC_Euro_Solver.hpp"
 #include "Solvers/MCMCSolver.hpp"
+
 #include "OptionTypes/VanillaOption.hpp"
+
 #include "Gaussian_PDF.hpp"
+
 
 using namespace std;
 
@@ -65,7 +58,10 @@ int main(int argc, char **argv)
     double price, delta, gamma, theta;
 
 
+    CUDA_MC_Euro_Solver cuSolve( 10000, (int)T);
     VanillaOption trialOption(S0, K, sigma, r, T, false, true);
+    cuSolve( &trialOption );
+
     BinomialSolver solver(1000);
     FiniteDiffSolver diffSolve(1000, 1000);
     BlackScholesSolver *bsSolve = new BlackScholesSolver;
@@ -98,6 +94,7 @@ int main(int argc, char **argv)
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << price << "\t" << mcmcSolver.errCalculation() << std::endl;
+
 
 
 	S0 += 1.0;
