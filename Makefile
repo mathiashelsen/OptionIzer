@@ -59,7 +59,7 @@
 # The pre-processor and compiler options.
 MY_CFLAGS = -I/usr/local/cuda-6.5/include -I. -O2 -fopenmp
 
-MY_CUFLAGS = -Xcompiler -fopenmp
+MY_CUFLAGS = -Xcompiler -fopenmp -arch=sm_20 -G
 
 # The linker options.
 MY_LIBS   =
