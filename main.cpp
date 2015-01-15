@@ -58,8 +58,8 @@ int main(int argc, char **argv)
     double price, delta, gamma, theta;
 
 
-    CUDA_MC_Euro_Solver cuSolve( 1024*128, (int)T);
-    VanillaOption trialOption(S0, K, sigma, r, T, false, true);
+    CUDA_MC_Euro_Solver cuSolve( 1024*256, (int)T);
+    VanillaOption trialOption(S0, K, sigma, r, T, false, false);
 
     BinomialSolver solver(1000);
     FiniteDiffSolver diffSolve(1000, 1000);

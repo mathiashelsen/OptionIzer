@@ -21,7 +21,7 @@ __global__ void EuroKernel( float *_x, float *_assets, float *_payoffs,
 	_assets[pathIndex] *= (1.0 + r + sigma*_x[pathIndex*Nsteps + i]);
     }
     float tmp = call*(_assets[pathIndex] - K)*exp(-r*T);
-    _payoffs[pathIndex] = (tmp > 0.0) ? tmp : 0.0;
+    _payoffs[pathIndex] = (tmp > 0.0f) ? tmp : 0.0f;
 
     __syncthreads();
 }
@@ -31,21 +31,27 @@ CUDA_MC_Euro_Solver::CUDA_MC_Euro_Solver(int _Nseries, int _Nsteps)
     Nseries = _Nseries;
     Nsteps = _Nsteps; 
 
-}
-
-CUDA_MC_Euro_Solver::~CUDA_MC_Euro_Solver()
-{
-    };
-
-void CUDA_MC_Euro_Solver::operator()(VanillaOption *option)
-{
+    std::cout << returns << std::endl;
     assert( cudaMalloc( (void **) &returns, Nseries*Nsteps*sizeof(float) ) == cudaSuccess);
+    std::cout << returns << std::endl;
     assert( cudaMalloc( (void **) &assets, Nseries*sizeof(float) ) == cudaSuccess);
     assert( cudaMalloc( (void **) &payoffs, Nseries*sizeof(float) ) == cudaSuccess);
 
     assert( curandCreateGenerator( &gen, CURAND_RNG_PSEUDO_MTGP32 ) == CURAND_STATUS_SUCCESS);
     assert( curandSetPseudoRandomGeneratorSeed( gen, 1234ULL ) == CURAND_STATUS_SUCCESS);
     assert( curandGenerateNormal( gen, returns, Nseries*Nsteps, 0.0, 1.0 ) == CURAND_STATUS_SUCCESS);
+}
+
+CUDA_MC_Euro_Solver::~CUDA_MC_Euro_Solver()
+{
+    curandDestroyGenerator( gen );
+    cudaFree( returns );
+    cudaFree( assets );
+};
+
+void CUDA_MC_Euro_Solver::operator()(VanillaOption *option)
+{
+
     float *localPayoffs = new float[Nseries];
     assert( localPayoffs );
     float scale = (float)option->T/(float)Nsteps;
@@ -80,8 +86,5 @@ void CUDA_MC_Euro_Solver::operator()(VanillaOption *option)
     avg /= (double) Nseries;
     option->price = avg;
     delete[] localPayoffs;
-    curandDestroyGenerator( gen );
-    cudaFree( returns );
-    cudaFree( assets );
 
 };
