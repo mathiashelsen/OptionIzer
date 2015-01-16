@@ -7,9 +7,10 @@
 #include "../OptionTypes/VanillaOption.hpp"
 
 
+#include <algorithm>
+#include <assert.h>
 #include <iostream>
 #include <math.h>
-#include <algorithm>
 
 template<class OptionType> class BinomialSolver : private Solver<OptionType>
 {
@@ -20,6 +21,7 @@ template<class OptionType> class BinomialSolver : private Solver<OptionType>
 
     public:
 	void operator()(OptionType *option);
+	void init();
 	BinomialSolver(int _N);
 	~BinomialSolver();
 };
@@ -27,7 +29,12 @@ template<class OptionType> class BinomialSolver : private Solver<OptionType>
 template<class OptionType> BinomialSolver<OptionType>::BinomialSolver(int _N)
 {
     N = _N;
+    assetValues = NULL;
+    optionValues = NULL;
+};
 
+template<class OptionType> void BinomialSolver<OptionType>::init()
+{
     assetValues = new double*[N+1];
     optionValues = new double*[N+1];
 
@@ -38,17 +45,23 @@ template<class OptionType> BinomialSolver<OptionType>::BinomialSolver(int _N)
 	assetValues[i] = new double[i+1];
 	optionValues[i] = new double[i+1];
     }
+
 };
 
 template<class OptionType> BinomialSolver<OptionType>::~BinomialSolver()
 {
     for(int i = 0; i < N+1; i++)
     {
-	delete assetValues[i];
-	delete optionValues[i];
+	if(assetValues[i])
+	    delete assetValues[i];
+	if(optionValues[i])
+	    delete optionValues[i];
     }
-    delete[] assetValues;
-    delete[] optionValues;
+
+    if(assetValues)
+	delete[] assetValues;
+    if(optionValues)
+	delete[] optionValues;
 };
 
 #endif

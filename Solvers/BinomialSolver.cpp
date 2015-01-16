@@ -2,6 +2,8 @@
 
 template<> void BinomialSolver<EuroOption>::operator()(EuroOption *option)
 {
+    assert(assetValues);
+    assert(optionValues);
     double dt = option->T/(double)N;
     double u = exp(option->sigma*sqrt(dt));
     double d = 1.0/u;
@@ -61,6 +63,8 @@ template<> void BinomialSolver<EuroOption>::operator()(EuroOption *option)
 
 template<> void BinomialSolver<AmericanOption>::operator()(AmericanOption *option)
 {
+    assert(assetValues);
+    assert(optionValues);
     double dt = option->T/(double)N;
     double u = exp(option->sigma*sqrt(dt));
     double d = 1.0/u;
