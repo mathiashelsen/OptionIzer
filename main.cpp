@@ -59,6 +59,7 @@ int main(int argc, char **argv)
 
 
     CUDA_MC_Solver<EuroOption> cuSolve( 1024*256, (int)T);
+    cuSolve.init();
     BinomialSolver<EuroOption> binomSolve(1000);
     EuroOption trialOption(S0, K, sigma, r, T, false);
 

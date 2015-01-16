@@ -31,27 +31,28 @@ CUDA_MC_Solver<EuroOption>::CUDA_MC_Solver(int _Nseries, int _Nsteps)
     Nseries = _Nseries;
     Nsteps = _Nsteps; 
 
-    std::cout << returns << std::endl;
-    assert( cudaMalloc( (void **) &returns, Nseries*Nsteps*sizeof(float) ) == cudaSuccess);
-    std::cout << returns << std::endl;
-    assert( cudaMalloc( (void **) &assets, Nseries*sizeof(float) ) == cudaSuccess);
-    assert( cudaMalloc( (void **) &payoffs, Nseries*sizeof(float) ) == cudaSuccess);
-
-    assert( curandCreateGenerator( &gen, CURAND_RNG_PSEUDO_MTGP32 ) == CURAND_STATUS_SUCCESS);
-    assert( curandSetPseudoRandomGeneratorSeed( gen, 1234ULL ) == CURAND_STATUS_SUCCESS);
-    assert( curandGenerateNormal( gen, returns, Nseries*Nsteps, 0.0, 1.0 ) == CURAND_STATUS_SUCCESS);
+    returns = NULL;
+    assets = NULL;
+    payoffs = NULL;
 }
 
 CUDA_MC_Solver<EuroOption>::~CUDA_MC_Solver()
 {
     curandDestroyGenerator( gen );
-    cudaFree( returns );
-    cudaFree( assets );
+
+    if( returns )
+	cudaFree( returns );
+    if( assets )
+	cudaFree( assets );
+    if( payoffs )
+	cudaFree( payoffs );
 };
 
 void CUDA_MC_Solver<EuroOption>::operator()(EuroOption *option)
 {
-
+    assert( returns );
+    assert( assets );
+    assert( payoffs );
     float *localPayoffs = new float[Nseries];
     assert( localPayoffs );
     float scale = (float)option->T/(float)Nsteps;
@@ -87,3 +88,16 @@ void CUDA_MC_Solver<EuroOption>::operator()(EuroOption *option)
     option->price = avg;
     delete[] localPayoffs;
 };
+
+void CUDA_MC_Solver<EuroOption>::init()
+{
+    assert( cudaMalloc( (void **) &returns, Nseries*Nsteps*sizeof(float) ) == cudaSuccess);
+    assert( cudaMalloc( (void **) &assets, Nseries*sizeof(float) ) == cudaSuccess);
+    assert( cudaMalloc( (void **) &payoffs, Nseries*sizeof(float) ) == cudaSuccess);
+
+    assert( curandCreateGenerator( &gen, CURAND_RNG_PSEUDO_MTGP32 ) == CURAND_STATUS_SUCCESS);
+    assert( curandSetPseudoRandomGeneratorSeed( gen, 1234ULL ) == CURAND_STATUS_SUCCESS);
+    assert( curandGenerateNormal( gen, returns, Nseries*Nsteps, 0.0, 1.0 ) == CURAND_STATUS_SUCCESS);
+
+};
+

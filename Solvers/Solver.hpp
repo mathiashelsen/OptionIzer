@@ -4,7 +4,8 @@
 template<class OptionType> class Solver
 {
     public:
-	virtual void operator()(OptionType *option) {};
+	virtual void operator()(OptionType *option) {return;};
+	virtual void init() {return;};
 };
 
 #endif

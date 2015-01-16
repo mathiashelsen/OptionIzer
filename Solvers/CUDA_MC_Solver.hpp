@@ -15,6 +15,7 @@ template<class OptionType> class CUDA_MC_Solver : public Solver<OptionType>
 public:
     ~CUDA_MC_Solver(){ return; }; 
     void operator()(OptionType *option);
+    void init();
 };
 
 template<> class CUDA_MC_Solver<EuroOption> : public Solver<EuroOption>
@@ -27,6 +28,7 @@ public:
     CUDA_MC_Solver(int _NSeries, int _NStep);
     ~CUDA_MC_Solver();
     void operator()(EuroOption *option);
+    void init();
 };
 
 #endif
