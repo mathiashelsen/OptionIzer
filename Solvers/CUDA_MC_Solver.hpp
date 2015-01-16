@@ -13,8 +13,8 @@
 template<class OptionType> class CUDA_MC_Solver : public Solver<OptionType>
 {
 public:
-    virtual ~CUDA_MC_Solver(){ return; }; 
-    virtual void operator()(OptionType *option);
+    ~CUDA_MC_Solver(){ return; }; 
+    void operator()(OptionType *option);
 };
 
 template<> class CUDA_MC_Solver<EuroOption> : public Solver<EuroOption>
