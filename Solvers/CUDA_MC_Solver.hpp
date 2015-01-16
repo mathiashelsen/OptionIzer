@@ -1,7 +1,7 @@
 #ifndef _CUDA_MC_SOLVER_HPP
 #define _CUDA_MC_SOLVER_HPP
 
-#include "../OptionTypes/VanillaOption.hpp"
+#include "../OptionTypes/EuroOption.hpp"
 
 #include <assert.h>
 #include <iostream>
@@ -17,7 +17,7 @@ public:
     virtual void operator()(OptionType *option);
 };
 
-template<> class CUDA_MC_Solver<VanillaOption> : public Solver<VanillaOption>
+template<> class CUDA_MC_Solver<EuroOption> : public Solver<EuroOption>
 {
 private:
     int Nseries, Nsteps;
@@ -26,7 +26,7 @@ private:
 public:
     CUDA_MC_Solver(int _NSeries, int _NStep);
     ~CUDA_MC_Solver();
-    void operator()(VanillaOption *option);
+    void operator()(EuroOption *option);
 };
 
 #endif

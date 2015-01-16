@@ -33,12 +33,12 @@ THE SOFTWARE.
 #include <gsl/gsl_randist.h>
 
 #include "Solvers/BinomialSolver.hpp"
-#include "Solvers/BlackScholesSolver.hpp"
-#include "Solvers/FiniteDiffSolver.hpp"
+//#include "Solvers/BlackScholesSolver.hpp"
+//#include "Solvers/FiniteDiffSolver.hpp"
 #include "Solvers/CUDA_MC_Solver.hpp"
-#include "Solvers/MCMCSolver.hpp"
+//#include "Solvers/MCMCSolver.hpp"
 
-#include "OptionTypes/VanillaOption.hpp"
+#include "OptionTypes/EuroOption.hpp"
 
 #include "Gaussian_PDF.hpp"
 
@@ -58,40 +58,31 @@ int main(int argc, char **argv)
     double price, delta, gamma, theta;
 
 
-    CUDA_MC_Solver<VanillaOption> cuSolve( 1024*256, (int)T);
-    VanillaOption trialOption(S0, K, sigma, r, T, false, false);
-    VanillaOption trialOption2(S0, K, sigma, r, T+1.0, false, false);
+    CUDA_MC_Solver<EuroOption> cuSolve( 1024*256, (int)T);
+    BinomialSolver<EuroOption> binomSolve(1000);
+    EuroOption trialOption(S0, K, sigma, r, T, false);
 
-    BinomialSolver solver(1000);
-    FiniteDiffSolver diffSolve(1000, 1000);
-    BlackScholesSolver *bsSolve = new BlackScholesSolver;
-
-    Gaussian_PDF mcmcPDF(r, sigma/sqrt(1.0));
-    MCMCSolver mcmcSolver(&mcmcPDF, 50, 10000, (int)(T+1.0));
     while(S0 < 120.0)
     {
 	trialOption.setUnderlying(S0); 
-	trialOption2.setUnderlying(S0); 
 
-	/*
-	solver(&trialOption);
+
+	binomSolve(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << S0 << "\t" << price << "\t"; 
-
+	/*
 
 	diffSolve(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << price << "\t";
-	*/
 
 	(*bsSolve)(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << price << "\t";
 
-	/*
 	mcmcSolver(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
