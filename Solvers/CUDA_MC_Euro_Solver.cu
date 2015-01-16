@@ -1,4 +1,4 @@
-#include "CUDA_MC_Euro_Solver.hpp"
+#include "CUDA_MC_Solver.hpp"
 
 __global__ void EuroKernel( float *_x, float *_assets, float *_payoffs,
     float r,
@@ -26,7 +26,7 @@ __global__ void EuroKernel( float *_x, float *_assets, float *_payoffs,
     __syncthreads();
 }
 
-CUDA_MC_Euro_Solver::CUDA_MC_Euro_Solver(int _Nseries, int _Nsteps)
+CUDA_MC_Solver<VanillaOption>::CUDA_MC_Solver(int _Nseries, int _Nsteps)
 {
     Nseries = _Nseries;
     Nsteps = _Nsteps; 
@@ -42,14 +42,14 @@ CUDA_MC_Euro_Solver::CUDA_MC_Euro_Solver(int _Nseries, int _Nsteps)
     assert( curandGenerateNormal( gen, returns, Nseries*Nsteps, 0.0, 1.0 ) == CURAND_STATUS_SUCCESS);
 }
 
-CUDA_MC_Euro_Solver::~CUDA_MC_Euro_Solver()
+CUDA_MC_Solver<VanillaOption>::~CUDA_MC_Solver()
 {
     curandDestroyGenerator( gen );
     cudaFree( returns );
     cudaFree( assets );
 };
 
-void CUDA_MC_Euro_Solver::operator()(VanillaOption *option)
+void CUDA_MC_Solver<VanillaOption>::operator()(VanillaOption *option)
 {
 
     float *localPayoffs = new float[Nseries];
@@ -86,5 +86,4 @@ void CUDA_MC_Euro_Solver::operator()(VanillaOption *option)
     avg /= (double) Nseries;
     option->price = avg;
     delete[] localPayoffs;
-
 };
