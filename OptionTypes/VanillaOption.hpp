@@ -11,18 +11,12 @@ class VanillaOption : public Option
     public:
 	VanillaOption() { return; };
 	// Inputs
-	double S0;
 	double K;
 	double sigma;
-	double r;
 	double T;
 	bool put;
-	// Outputs
-	double price, delta, gamma, theta;
     
-	void setUnderlying( double _S0 ){ S0 = _S0; };
 	void setVol( double _s ) { sigma = _s; };
-	void getPrice( double *_price ) { *_price = price; };
 	void getGreeks( double *_delta, double *_gamma, double *_theta ){
 	    *_delta = delta;
 	    *_gamma = gamma;
