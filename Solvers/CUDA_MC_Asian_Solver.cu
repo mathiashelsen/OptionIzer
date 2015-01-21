@@ -1,6 +1,6 @@
 #include "CUDA_MC_Solver.hpp"
 
-__global__ void EuroKernel( float *_x, float *_assets, float *_payoffs,
+__global__ void AsianKernel(float *_x, float *_assets, float *_payoffs,
     float r,
     float S0,
     float K,
@@ -15,19 +15,23 @@ __global__ void EuroKernel( float *_x, float *_assets, float *_payoffs,
 	return;
     
     _assets[pathIndex] = S0;
-
+    float avg = 0.0;
     for(int i = 0; i < Nsteps; i++)
     {
 	_assets[pathIndex] *= (1.0 + r + sigma*_x[pathIndex*Nsteps + i]);
+	avg += _assets[pathIndex];
     }
+    avg /= (float) Nsteps;
 
-    float tmp = call*(_assets[pathIndex] - K)*exp(-r*T);
+    float tmp = call*(avg - K)*exp(-r*T);
     _payoffs[pathIndex] = (tmp > 0.0f) ? tmp : 0.0f;
 
     __syncthreads();
+
 }
 
-CUDA_MC_Solver<EuroOption>::CUDA_MC_Solver(int _Nseries, int _Nsteps)
+
+CUDA_MC_Solver<AsianOption>::CUDA_MC_Solver(int _Nseries, int _Nsteps)
 {
     Nseries = _Nseries;
     Nsteps = _Nsteps; 
@@ -37,7 +41,7 @@ CUDA_MC_Solver<EuroOption>::CUDA_MC_Solver(int _Nseries, int _Nsteps)
     payoffs = NULL;
 }
 
-CUDA_MC_Solver<EuroOption>::~CUDA_MC_Solver()
+CUDA_MC_Solver<AsianOption>::~CUDA_MC_Solver()
 {
     curandDestroyGenerator( gen );
 
@@ -49,7 +53,7 @@ CUDA_MC_Solver<EuroOption>::~CUDA_MC_Solver()
 	cudaFree( payoffs );
 };
 
-void CUDA_MC_Solver<EuroOption>::operator()(EuroOption *option)
+void CUDA_MC_Solver<AsianOption>::operator()(AsianOption *option)
 {
     assert( returns );
     assert( assets );
@@ -64,7 +68,7 @@ void CUDA_MC_Solver<EuroOption>::operator()(EuroOption *option)
 
     int threadsPerBlock = 256;
     int nBlocks = Nseries/threadsPerBlock;
-    EuroKernel<<<nBlocks, threadsPerBlock>>>(returns, 
+    AsianKernel<<<nBlocks, threadsPerBlock>>>(returns, 
 					    assets, 
 					    payoffs, 
 					    (float)option->r, 
@@ -90,7 +94,7 @@ void CUDA_MC_Solver<EuroOption>::operator()(EuroOption *option)
     delete[] localPayoffs;
 };
 
-void CUDA_MC_Solver<EuroOption>::init()
+void CUDA_MC_Solver<AsianOption>::init()
 {
     assert( cudaMalloc( (void **) &returns, Nseries*Nsteps*sizeof(float) ) == cudaSuccess);
     assert( cudaMalloc( (void **) &assets, Nseries*sizeof(float) ) == cudaSuccess);
@@ -99,6 +103,5 @@ void CUDA_MC_Solver<EuroOption>::init()
     assert( curandCreateGenerator( &gen, CURAND_RNG_PSEUDO_MTGP32 ) == CURAND_STATUS_SUCCESS);
     assert( curandSetPseudoRandomGeneratorSeed( gen, 1234ULL ) == CURAND_STATUS_SUCCESS);
     assert( curandGenerateNormal( gen, returns, Nseries*Nsteps, 0.0, 1.0 ) == CURAND_STATUS_SUCCESS);
-
 };
 

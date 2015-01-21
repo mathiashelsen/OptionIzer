@@ -39,6 +39,7 @@ THE SOFTWARE.
 //#include "Solvers/MCMCSolver.hpp"
 
 #include "OptionTypes/EuroOption.hpp"
+#include "OptionTypes/AsianOption.hpp"
 
 #include "Gaussian_PDF.hpp"
 
@@ -58,41 +59,32 @@ int main(int argc, char **argv)
     double price, delta, gamma, theta;
 
 
-    CUDA_MC_Solver<EuroOption> cuSolve( 1024*256, (int)T);
+    CUDA_MC_Solver<EuroOption> cuSolve( 1024, (int)T);
+    CUDA_MC_Solver<AsianOption> cuSolve2( 1024, (int)T);
     cuSolve.init();
+    cuSolve2.init();
     BinomialSolver<EuroOption> binomSolve(1000);
     binomSolve.init();
     EuroOption trialOption(S0, K, sigma, r, T, false);
+    AsianOption trialOption2(S0, K, sigma, r, T, false);
 
     while(S0 < 120.0)
     {
 	trialOption.setUnderlying(S0); 
+	trialOption2.setUnderlying(S0); 
 
 
 	binomSolve(&trialOption);
 	trialOption.getPrice(&price);
 	trialOption.getGreeks(&delta, &gamma, &theta);
 	std::cout << S0 << "\t" << price << "\t"; 
-	/*
-
-	diffSolve(&trialOption);
-	trialOption.getPrice(&price);
-	trialOption.getGreeks(&delta, &gamma, &theta);
-	std::cout << price << "\t";
-
-	(*bsSolve)(&trialOption);
-	trialOption.getPrice(&price);
-	trialOption.getGreeks(&delta, &gamma, &theta);
-	std::cout << price << "\t";
-
-	mcmcSolver(&trialOption);
-	trialOption.getPrice(&price);
-	trialOption.getGreeks(&delta, &gamma, &theta);
-	std::cout << price << "\t";
-	*/
 
         cuSolve( &trialOption );
 	trialOption.getPrice(&price);
+	std::cout << price << "\t";
+
+	cuSolve2( &trialOption2 );
+	trialOption2.getPrice(&price);
 	std::cout << price << "\n";
 
 	S0 += 1.0;
