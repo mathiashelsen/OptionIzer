@@ -1,8 +1,9 @@
 #ifndef _CUDA_MC_SOLVER_HPP
 #define _CUDA_MC_SOLVER_HPP
 
-#include "../OptionTypes/EuroOption.hpp"
 #include "../OptionTypes/AsianOption.hpp"
+#include "../OptionTypes/EuroOption.hpp"
+#include "../OptionTypes/LookBackOption.hpp"
 
 #include <assert.h>
 #include <iostream>
@@ -44,6 +45,20 @@ template<> class CUDA_MC_Solver<AsianOption> : public Solver<AsianOption>
 	CUDA_MC_Solver(int _NSeries, int _NStep);
 	~CUDA_MC_Solver();
 	void operator()(AsianOption *option);
+	void init();
+	void free();
+};
+
+template<> class CUDA_MC_Solver<LookBackOption> : public Solver<LookBackOption>
+{
+    private:
+	int Nseries, Nsteps;
+	float *returns, *assets, *payoffs;
+	curandGenerator_t gen;
+    public:
+	CUDA_MC_Solver(int _NSeries, int _NStep);
+	~CUDA_MC_Solver();
+	void operator()(LookBackOption *option);
 	void init();
 	void free();
 };
