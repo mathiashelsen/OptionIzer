@@ -105,3 +105,17 @@ void CUDA_MC_Solver<AsianOption>::init()
     assert( curandGenerateNormal( gen, returns, Nseries*Nsteps, 0.0, 1.0 ) == CURAND_STATUS_SUCCESS);
 };
 
+void CUDA_MC_Solver<AsianOption>::free()
+{
+    curandDestroyGenerator( gen );
+
+    if( returns )
+	cudaFree( returns );
+	returns = NULL;
+    if( assets )
+	cudaFree( assets );
+	assets = NULL;
+    if( payoffs )
+	cudaFree( payoffs );
+	payoffs = NULL;
+};

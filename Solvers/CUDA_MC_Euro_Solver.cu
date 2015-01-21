@@ -102,3 +102,17 @@ void CUDA_MC_Solver<EuroOption>::init()
 
 };
 
+void CUDA_MC_Solver<EuroOption>::free()
+{
+    curandDestroyGenerator( gen );
+
+    if( returns )
+	cudaFree( returns );
+	returns = NULL;
+    if( assets )
+	cudaFree( assets );
+	assets = NULL;
+    if( payoffs )
+	cudaFree( payoffs );
+	payoffs = NULL;
+};

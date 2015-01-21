@@ -17,6 +17,7 @@ template<class OptionType> class CUDA_MC_Solver : public Solver<OptionType>
 	~CUDA_MC_Solver(){ return; }; 
 	void operator()(OptionType *option);
 	void init();
+	void free();
 };
 
 template<> class CUDA_MC_Solver<EuroOption> : public Solver<EuroOption>
@@ -30,6 +31,7 @@ template<> class CUDA_MC_Solver<EuroOption> : public Solver<EuroOption>
 	~CUDA_MC_Solver();
 	void operator()(EuroOption *option);
 	void init();
+	void free();
 };
 
 template<> class CUDA_MC_Solver<AsianOption> : public Solver<AsianOption>
@@ -43,6 +45,7 @@ template<> class CUDA_MC_Solver<AsianOption> : public Solver<AsianOption>
 	~CUDA_MC_Solver();
 	void operator()(AsianOption *option);
 	void init();
+	void free();
 };
 
 #endif
