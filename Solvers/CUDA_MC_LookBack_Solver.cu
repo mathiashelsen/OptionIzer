@@ -38,7 +38,10 @@ void CUDA_MC_Solver<LookBackOption>::operator()(LookBackOption *option)
 
     int threadsPerBlock = 256;
     int nBlocks = Nseries/threadsPerBlock;
-    LookBackKernel<option->type><<<nBlocks, threadsPerBlock>>>(returns, 
+    const LookBackType t = option->type;
+    switch(t)
+    {
+	case LookBackTypeMin: LookBackKernel<LookBackTypeMin><<<nBlocks, threadsPerBlock>>>(returns, 
 					    assets, 
 					    payoffs, 
 					    (float)option->r, 
@@ -49,6 +52,20 @@ void CUDA_MC_Solver<LookBackOption>::operator()(LookBackOption *option)
 					    call,
 					    Nseries, 
 					    Nsteps);
+				break;
+	case LookBackTypeMax: LookBackKernel<LookBackTypeMax><<<nBlocks, threadsPerBlock>>>(returns, 
+					    assets, 
+					    payoffs, 
+					    (float)option->r, 
+					    (float)option->S0, 
+					    (float)option->K, 
+					    (float) option->sigma*scale, 
+					    (float) option->T,
+					    call,
+					    Nseries, 
+					    Nsteps);
+				break;
+    }
     
     cudaThreadSynchronize();
     cudaMemcpy( (void *) localPayoffs, payoffs, sizeof(float)*Nseries, cudaMemcpyDeviceToHost );

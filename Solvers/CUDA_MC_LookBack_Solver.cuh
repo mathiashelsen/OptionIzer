@@ -3,6 +3,15 @@
 
 #include "CUDA_MC_Solver.hpp"
 
+template<LookBackType type> __global__ void LookBackKernel(float *_x, float *_assets, float *_payoffs,
+    float r,
+    float S0,
+    float K,
+    float sigma,
+    float T,
+    float call,
+    int Nseries,
+    int Nsteps);
 
 template<LookBackType type> __global__ void LookBackKernel(float *_x, float *_assets, float *_payoffs,
     float r,

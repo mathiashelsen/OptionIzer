@@ -7,6 +7,5 @@ LookBackOption::LookBackOption(double _S0, double _K, double _sigma, double _r, 
     r = _r;
     T = _T;
     put = _put;
-    min = _min;
     type = _type;
 }
